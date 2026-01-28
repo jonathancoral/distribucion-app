@@ -25,19 +25,18 @@
 
 <script>
   // ==========================================
-  // CONFIGURACIÓN DE CONEXIÓN (El Puente)
+  // CONFIGURACIÓN DE CONEXIÓN
   // ==========================================
+  // Asegúrate de que esta URL sea la de tu Script /exec
   const API_URL = "https://script.google.com/macros/s/AKfycbyI8BNbtgbuJBWF8qiFEQEhIYsqauPjlCGBripklzklUhvg_7LHK8Hn5YOLxQVZoDf_iw/exec"; 
   
-  // Función genérica para hablar con Google Apps Script desde fuera
+  // Función genérica para hablar con Google Apps Script
   async function callGoogleScript(action, payload = {}) {
-    // CORS workaround para GAS: usar POST
     const body = JSON.stringify({ action: action, datos: payload });
     
     const response = await fetch(API_URL, {
       method: "POST",
       body: body
-      // No usamos headers complejos para evitar preflight de CORS estricto
     });
     
     const json = await response.json();
@@ -46,7 +45,7 @@
     return json.data;
   }
 
-  /* ===== LÓGICA UI (Idéntica, solo cambia cómo llamamos al server) ===== */
+  /* ===== LÓGICA UI ===== */
 
   function showToast(msg, type = 'info') {
     const t = document.getElementById('toast');
@@ -70,12 +69,6 @@
     else { bDist.style.display = 'block'; bMan.classList.add('hidden'); }
   }
 
-  document.getElementById('valor').addEventListener('input', function(e) {
-    let value = this.value.replace(/\D/g, '');
-    if (value) { this.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
-    else { this.value = ''; }
-  });
-
   function vincularAutocomplete(textoId, hiddenId, listaId) {
     document.getElementById(textoId).addEventListener('input', function () {
       const valor = this.value;
@@ -90,9 +83,22 @@
     });
   }
 
-  // --- CARGA INICIAL ---
+  // --- CARGA INICIAL (Aquí corregimos el error) ---
   window.onload = function () {
-    // Llamada al servidor via Fetch
+    
+    // 1. CORRECCIÓN: El listener del valor ahora está aquí dentro, cuando el HTML ya existe.
+    document.getElementById('valor').addEventListener('input', function(e) {
+      let value = this.value.replace(/\D/g, '');
+      if (value) { this.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
+      else { this.value = ''; }
+    });
+
+    // 2. Registrar Service Worker para PWA
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+
+    // 3. Llamada al servidor via Fetch
     callGoogleScript('cargarDatosIniciales')
       .then(datos => {
         cargarOpciones(datos.opciones);
@@ -111,11 +117,6 @@
         console.error(err);
         showToast('Error de conexión: ' + err.message, 'error');
       });
-      
-      // Registrar Service Worker para PWA (Instalación)
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js');
-      }
   };
 
   function cargarOpciones(opciones) {
@@ -164,7 +165,6 @@
     btn.style.backgroundColor = "var(--md-sys-color-primary-container)";
     showToast('Sincronizando con Google Sheets...', 'info');
 
-    // Llamada al servidor via Fetch
     callGoogleScript('limpiarCache')
       .then(datosNuevos => {
         cargarLista('listaServicios', datosNuevos.servicios);
@@ -188,7 +188,6 @@
     btn.disabled = true;
     btn.innerHTML = '<span class="material-symbols-outlined">hourglass_empty</span> Procesando...';
     
-    // ... (Tu lógica de validación es idéntica) ...
     const nota = document.getElementById('nota').value.trim();
     const valorRaw = document.getElementById('valor').value.replace(/\D/g, '');
     const valorNumerico = Number(valorRaw);
@@ -214,7 +213,6 @@
       nota
     };
 
-    // Llamada al servidor via Fetch
     callGoogleScript('generarTexto', datos)
        .then(texto => {
           navigator.clipboard.writeText(texto);
