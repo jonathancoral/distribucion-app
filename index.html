@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>Distribución de Gastos</title>
+  <title>Gastos</title>
   
   <meta name="theme-color" content="#F2F5FA">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -96,7 +96,7 @@
     }
     .icon-btn:active { background-color: var(--md-sys-color-surface-container-high); }
 
-    /* TARJETA MODO MANUAL (SWITCH) */
+    /* TARJETA NO PRORRATEAR (SWITCH) */
     .card-switch {
       background-color: var(--md-sys-color-surface-container);
       border-radius: var(--shape-large);
@@ -204,48 +204,61 @@
       border-radius: 20px;
     }
 
-    /* BOTÓN FAB EXTENDIDO (Acción Principal) */
+    /* Contenedor del Botón (Scaffolding) */
     .fab-container {
       position: fixed;
-      bottom: 24px;
-      left: 0; right: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 100px;
       display: flex;
       justify-content: center;
-      pointer-events: none; /* Dejar pasar clics en los lados */
+      align-items: center;
+      /* Degradado para que el contenido pase por debajo con estilo */
+      background: linear-gradient(to top, var(--md-sys-color-surface) 60%, transparent);
+      pointer-events: none;
       z-index: 10;
     }
-
+    
+    /* El Botón (Extended FAB) */
     .btn-primary {
       pointer-events: auto;
       background-color: var(--md-sys-color-primary);
       color: var(--md-sys-color-on-primary);
       height: 56px;
-      padding: 0 32px;
-      border-radius: var(--shape-full);
+      padding: 0 24px;
+      border-radius: 16px; /* M3 usa radios de 16px para FABs, no siempre círculos */
       border: none;
       font-family: 'Roboto', sans-serif;
       font-size: 16px;
       font-weight: 500;
+      letter-spacing: 0.1px;
       display: flex;
       align-items: center;
       gap: 12px;
-      box-shadow: 0 4px 8px 3px rgba(0, 0, 0, 0.15);
+      /* Sombra con tinte azulado */
+      box-shadow: 0 4px 8px 3px rgba(0, 100, 149, 0.15), 0 1px 3px rgba(0, 100, 149, 0.3);
       cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: transform 0.1s var(--motion-easing-emphasized), 
+                  box-shadow 0.2s, 
+                  background-color 0.2s;
     }
-
+    
+    /* Efecto al presionar (Feedback táctil Android) */
     .btn-primary:active {
-      transform: scale(0.96);
-      box-shadow: 0 2px 4px 2px rgba(0, 0, 0, 0.15);
+      transform: scale(0.94);
+      background-color: #004d74; /* Un azul más oscuro */
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
-
+    
+    /* Estado Deshabilitado */
     .btn-primary:disabled {
-      background-color: var(--md-sys-color-surface-container-high);
-      color: var(--md-sys-color-on-surface-variant);
+      background-color: #1D1B20;
+      opacity: 0.12;
+      color: #1D1B20;
       box-shadow: none;
-      opacity: 0.6;
+      pointer-events: none;
     }
-
     /* ===== BOTTOM SHEET (Menú Deslizante) ===== */
     .scrim {
       position: fixed;
@@ -370,8 +383,8 @@
     
     <header>
       <div>
-        <h1>Gastos</h1>
-        <div class="subtitle">Distribución y Prorrateo</div>
+        <h1>Prorrateo de Unidades de Negocio</h1>
+        <div class="subtitle">Prorrateo de Unidades de Negocio</div>
       </div>
       <button class="icon-btn" onclick="forzarRefresco()" title="Sincronizar">
         <span class="material-symbols-rounded" id="iconSync">sync</span>
@@ -379,7 +392,7 @@
     </header>
 
     <div class="card-switch" onclick="document.getElementById('sinDistribucion').click()">
-      <span class="switch-text">Modo Manual</span>
+      <span class="switch-text">No prorratear</span>
       <div class="m3-switch">
         <input type="checkbox" id="sinDistribucion" onchange="toggleManual()">
         <div class="track"><div class="thumb"></div></div>
