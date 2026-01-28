@@ -251,12 +251,13 @@
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
     
-    /* Estado Deshabilitado */
+    /* Estado Deshabilitado (Cargando) */
     .btn-primary:disabled {
-      background-color: #1D1B20;
-      opacity: 0.12;
-      color: #1D1B20;
-      box-shadow: none;
+      background-color: #E2E7F0; /* Fondo gris azulado suave */
+      color: #44474E;            /* Texto gris oscuro y visible */
+      box-shadow: none;          /* Sin sombra */
+      cursor: wait;              /* Cursor de espera */
+      opacity: 1;                /* IMPORTANTE: Opacidad al 100% para leer el texto */
       pointer-events: none;
     }
     /* ===== BOTTOM SHEET (Menú Deslizante) ===== */
@@ -551,7 +552,7 @@
     let datos = [];
     if (tipo === 'opcion') { sheetTitle.innerText = 'Opciones'; datos = datosGlobales.opciones; }
     else if (tipo === 'servicio') { sheetTitle.innerText = 'Servicios'; datos = datosGlobales.servicios; }
-    else if (tipo === 'ccosto') { sheetTitle.innerText = 'Centros de Costo'; datos = datosGlobales.ccostos; }
+    else if (tipo === 'ccosto') { sheetTitle.innerText = 'Centros de costo'; datos = datosGlobales.ccostos; }
     else if (tipo === 'un') { sheetTitle.innerText = 'Unidades de Negocio'; datos = datosGlobales.unidades; }
 
     // Renderizar lista inicial
