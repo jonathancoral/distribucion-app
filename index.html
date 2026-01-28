@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  
+  <title>Distribución de Gastos</title>
+  <meta name="theme-color" content="#F0F3F8">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="icon-192.png"> <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+
+  <style>
+     /* ... PEGA AQUÍ TU CSS DEL ÚLTIMO ARCHIVO QUE TE PASÉ ... */
+     /* Solo asegúrate de agregar esto para mejorar la experiencia móvil: */
+     body { -webkit-tap-highlight-color: transparent; }
+  </style>
+</head>
+
+<body>
+
+<script>
+  // ==========================================
+  // CONFIGURACIÓN DE CONEXIÓN (El Puente)
+  // ==========================================
+  const API_URL = "https://script.google.com/macros/s/AKfycbyI8BNbtgbuJBWF8qiFEQEhIYsqauPjlCGBripklzklUhvg_7LHK8Hn5YOLxQVZoDf_iw/exec"; 
+  
+  // Función genérica para hablar con Google Apps Script desde fuera
+  async function callGoogleScript(action, payload = {}) {
+    // CORS workaround para GAS: usar POST
+    const body = JSON.stringify({ action: action, datos: payload });
+    
+    const response = await fetch(API_URL, {
+      method: "POST",
+      body: body
+      // No usamos headers complejos para evitar preflight de CORS estricto
+    });
+    
+    const json = await response.json();
+    
+    if (json.status === 'error') throw new Error(json.message);
+    return json.data;
+  }
+
+  /* ===== LÓGICA UI (Idéntica, solo cambia cómo llamamos al server) ===== */
+
+  function showToast(msg, type = 'info') {
+    const t = document.getElementById('toast');
+    const txt = document.getElementById('toastMsg');
+    const icon = t.querySelector('.toast-icon');
+    txt.textContent = msg;
+    t.className = ''; 
+    if (type === 'success') { t.classList.add('success'); icon.textContent = 'check_circle'; }
+    else if (type === 'error') { t.classList.add('error'); icon.textContent = 'error'; }
+    else { icon.textContent = 'info'; }
+    void t.offsetWidth;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  function toggleManual() {
+    const activo = document.getElementById('sinDistribucion').checked;
+    const bDist = document.getElementById('bloqueDistribucion');
+    const bMan = document.getElementById('bloqueManual');
+    if (activo) { bDist.style.display = 'none'; bMan.classList.remove('hidden'); }
+    else { bDist.style.display = 'block'; bMan.classList.add('hidden'); }
+  }
+
+  document.getElementById('valor').addEventListener('input', function(e) {
+    let value = this.value.replace(/\D/g, '');
+    if (value) { this.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
+    else { this.value = ''; }
+  });
+
+  function vincularAutocomplete(textoId, hiddenId, listaId) {
+    document.getElementById(textoId).addEventListener('input', function () {
+      const valor = this.value;
+      const opciones = document.querySelectorAll(`#${listaId} option`);
+      for (const op of opciones) {
+        if (op.value === valor) {
+          document.getElementById(hiddenId).value = op.dataset.codigo;
+          return;
+        }
+      }
+      document.getElementById(hiddenId).value = '';
+    });
+  }
+
+  // --- CARGA INICIAL ---
+  window.onload = function () {
+    // Llamada al servidor via Fetch
+    callGoogleScript('cargarDatosIniciales')
+      .then(datos => {
+        cargarOpciones(datos.opciones);
+        cargarLista('listaServicios', datos.servicios);
+        cargarLista('listaCCostos', datos.ccostos);
+        cargarLista('listaUN', datos.unidades);
+        
+        vincularAutocomplete('servicioTexto', 'servicio', 'listaServicios');
+        vincularAutocomplete('ccostoTexto', 'ccosto', 'listaCCostos');
+        vincularAutocomplete('unTexto', 'un', 'listaUN');
+        
+        document.getElementById('skeleton').style.display = 'none';
+        document.getElementById('app').classList.remove('hidden');
+      })
+      .catch(err => {
+        console.error(err);
+        showToast('Error de conexión: ' + err.message, 'error');
+      });
+      
+      // Registrar Service Worker para PWA (Instalación)
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js');
+      }
+  };
+
+  function cargarOpciones(opciones) {
+    const sel = document.getElementById('opcion');
+    sel.innerHTML = '<option value="" disabled selected hidden></option>';
+    opciones.forEach(o => {
+      const opt = document.createElement('option');
+      opt.value = o.codigo;
+      opt.textContent = `${o.codigo} – ${o.nombre}`;
+      sel.appendChild(opt);
+    });
+    
+    function flotarLabel() {
+        const label = sel.parentElement.querySelector('label');
+        if (sel.value && label) {
+            label.style.top = '16px';
+            label.style.transform = 'translateY(-100%)';
+            label.style.fontSize = '12px';
+            label.style.color = 'var(--md-sys-color-primary)';
+            label.style.opacity = '1';
+            label.style.fontWeight = '600';
+        }
+    }
+    sel.addEventListener('change', flotarLabel);
+    flotarLabel();
+  }
+
+  function cargarLista(id, datos) {
+    const dl = document.getElementById(id);
+    dl.innerHTML = '';
+    datos.forEach(d => {
+      const opt = document.createElement('option');
+      opt.value = d.nombre;
+      opt.dataset.codigo = d.codigo;
+      opt.textContent = d.codigo; 
+      dl.appendChild(opt);
+    });
+  }
+
+  function forzarRefresco() {
+    const icon = document.getElementById('iconRefrescar');
+    const btn = document.getElementById('btnRefrescar');
+    
+    icon.style.transition = "transform 1s ease";
+    icon.style.transform = "rotate(360deg)";
+    btn.style.backgroundColor = "var(--md-sys-color-primary-container)";
+    showToast('Sincronizando con Google Sheets...', 'info');
+
+    // Llamada al servidor via Fetch
+    callGoogleScript('limpiarCache')
+      .then(datosNuevos => {
+        cargarLista('listaServicios', datosNuevos.servicios);
+        cargarLista('listaCCostos', datosNuevos.ccostos);
+        cargarLista('listaUN', datosNuevos.unidades);
+        cargarOpciones(datosNuevos.opciones);
+        
+        icon.style.transform = "rotate(0deg)";
+        btn.style.backgroundColor = "transparent";
+        showToast('Datos actualizados', 'success');
+      })
+      .catch(err => {
+         showToast('Error: ' + err.message, 'error');
+         btn.style.backgroundColor = "transparent";
+      });
+  }
+
+  function generar() {
+    const btn = document.getElementById('btnGenerar');
+    const original = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="material-symbols-outlined">hourglass_empty</span> Procesando...';
+    
+    // ... (Tu lógica de validación es idéntica) ...
+    const nota = document.getElementById('nota').value.trim();
+    const valorRaw = document.getElementById('valor').value.replace(/\D/g, '');
+    const valorNumerico = Number(valorRaw);
+    if (!/^\d{4}/.test(nota)) { showToast('La nota debe iniciar con 4 dígitos', 'error'); resetBtn(original); return; }
+    if (!document.getElementById('servicio').value || !document.getElementById('ccosto').value || !document.getElementById('motivo').value || !document.getElementById('tercero').value || valorNumerico <= 0) {
+      showToast('Todos los campos son obligatorios', 'error'); resetBtn(original); return;
+    }
+    const sinDistribucion = document.getElementById('sinDistribucion').checked;
+    if (sinDistribucion && (!document.getElementById('co').value || !document.getElementById('un').value)) {
+      showToast('Faltan datos manuales', 'error'); resetBtn(original); return;
+    }
+    
+    const datos = {
+      sinDistribucion,
+      opcion: sinDistribucion ? null : document.getElementById('opcion').value,
+      co: sinDistribucion ? document.getElementById('co').value : null,
+      un: sinDistribucion ? document.getElementById('un').value : null,
+      servicio: document.getElementById('servicio').value,
+      motivo: document.getElementById('motivo').value,
+      ccosto: document.getElementById('ccosto').value,
+      tercero: document.getElementById('tercero').value,
+      valor: valorNumerico,
+      nota
+    };
+
+    // Llamada al servidor via Fetch
+    callGoogleScript('generarTexto', datos)
+       .then(texto => {
+          navigator.clipboard.writeText(texto);
+          showToast('¡Copiado al portapapeles!', 'success');
+          resetBtn(original);
+       })
+       .catch(err => {
+          showToast('Error: ' + err.message, 'error');
+          resetBtn(original);
+       });
+  }
+
+  function resetBtn(content) {
+    const btn = document.getElementById('btnGenerar');
+    btn.disabled = false;
+    btn.innerHTML = content;
+  }
+</script>
+
+</body>
+</html>
