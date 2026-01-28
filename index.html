@@ -368,6 +368,7 @@
       display: flex; align-items: center; gap: 12px;
     }
     #toast.show { opacity: 1; transform: translateX(-50%) scale(1); }
+    
   </style>
 </head>
 
@@ -454,7 +455,7 @@
   </div> <div class="fab-container hidden" id="fabContainer">
     <button id="btnGenerar" class="btn-primary" onclick="generar()">
       <span class="material-symbols-rounded">auto_fix_high</span>
-      Generar y Copiar
+      Generar
     </button>
   </div>
 
@@ -656,54 +657,62 @@
   }
 
   function generar() {
-    const btn = document.getElementById('btnGenerar');
-    const originalText = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = 'Procesando...';
-
-    const nota = document.getElementById('nota').value.trim();
-    const valor = Number(document.getElementById('valor').value.replace(/\D/g, ''));
-
-    // Validaciones simples
-    if (!/^\d{4}/.test(nota)) {
-        showToast('La nota debe iniciar con 4 dígitos', 'error');
-        resetBtn(btn, originalText); return;
+      const btn = document.getElementById('btnGenerar');
+      const originalText = btn.innerHTML; // Guarda el estado original (icono + texto)
+      
+      // CAMBIO: Icono de carga giratorio M3 + Texto
+      btn.disabled = true;
+      btn.innerHTML = '<span class="material-symbols-rounded" style="animation: spin 1s linear infinite; margin-right: 8px;">progress_activity</span> Procesando...';
+  
+      const nota = document.getElementById('nota').value.trim();
+      const valor = Number(document.getElementById('valor').value.replace(/\D/g, ''));
+  
+      // Validaciones (Tus mensajes exactos)
+      if (!/^\d{4}/.test(nota)) {
+          showToast('La nota debe iniciar con el consecutivo del Documento Soporte', 'error');
+          resetBtn(btn, originalText); return;
+      }
+      if (valor <= 0) {
+          showToast('Ingrese un valor válido', 'error');
+          resetBtn(btn, originalText); return;
+      }
+  
+      const sinDistribucion = document.getElementById('sinDistribucion').checked;
+      
+      const payload = {
+          sinDistribucion,
+          opcion: sinDistribucion ? null : document.getElementById('opcion').value,
+          co: sinDistribucion ? document.getElementById('co').value : null,
+          un: sinDistribucion ? document.getElementById('un').value : null,
+          servicio: document.getElementById('servicio').value,
+          motivo: document.getElementById('motivo').value,
+          ccosto: document.getElementById('ccosto').value,
+          tercero: document.getElementById('tercero').value,
+          valor: valor,
+          nota
+      };
+  
+      // Validar campos requeridos según modo
+      if (!sinDistribucion && !payload.opcion) { showToast('Seleccione una opción', 'error'); resetBtn(btn, originalText); return; }
+      if (!payload.servicio || !payload.ccosto) { showToast('Faltan campos obligatorios', 'error'); resetBtn(btn, originalText); return; }
+  
+      callGoogleScript('generarTexto', payload)
+        .then(texto => {
+            navigator.clipboard.writeText(texto);
+            showToast('¡Listo!', 'success');
+            resetBtn(btn, originalText);
+        })
+        .catch(err => {
+            showToast('Error: ' + err.message, 'error');
+            resetBtn(btn, originalText);
+        });
     }
-    if (valor <= 0) {
-        showToast('Ingrese un valor válido', 'error');
-        resetBtn(btn, originalText); return;
+  
+    // Asegúrate de que esta función auxiliar reciba los 2 parámetros
+    function resetBtn(btn, content) {
+        btn.disabled = false;
+        btn.innerHTML = content;
     }
-
-    const sinDistribucion = document.getElementById('sinDistribucion').checked;
-    
-    const payload = {
-        sinDistribucion,
-        opcion: sinDistribucion ? null : document.getElementById('opcion').value,
-        co: sinDistribucion ? document.getElementById('co').value : null,
-        un: sinDistribucion ? document.getElementById('un').value : null,
-        servicio: document.getElementById('servicio').value,
-        motivo: document.getElementById('motivo').value,
-        ccosto: document.getElementById('ccosto').value,
-        tercero: document.getElementById('tercero').value,
-        valor: valor,
-        nota
-    };
-
-    // Validar campos requeridos según modo
-    if (!sinDistribucion && !payload.opcion) { showToast('Seleccione una opción', 'error'); resetBtn(btn, originalText); return; }
-    if (!payload.servicio || !payload.ccosto) { showToast('Faltan campos obligatorios', 'error'); resetBtn(btn, originalText); return; }
-
-    callGoogleScript('generarTexto', payload)
-      .then(texto => {
-          navigator.clipboard.writeText(texto);
-          showToast('¡Copiado!', 'success');
-          resetBtn(btn, originalText);
-      })
-      .catch(err => {
-          showToast('Error: ' + err.message, 'error');
-          resetBtn(btn, originalText);
-      });
-  }
 
   function resetBtn(btn, html) {
       btn.disabled = false;
