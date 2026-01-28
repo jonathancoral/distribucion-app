@@ -3,10 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  
   <title>Distribución de Gastos</title>
-  <meta name="theme-color" content="#F0F3F8">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  
+  <meta name="theme-color" content="#F2F5FA">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" href="icon-192.png">
@@ -14,485 +13,689 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
 
   <style>
     :root {
-      /* ===== PALETA M3 EXPRESSIVE BLUE ===== */
-      --md-surface: #F0F3F8;
-      --md-surface-container: #FFFFFF;
-      --md-surface-container-high: #EBEFF5; /* Hover en menús */
-      --md-primary: #00639B; 
-      --md-on-surface: #1A1C1E;
-      --md-on-surface-variant: #43474E; 
-      --md-on-primary: #FFFFFF; 
-      --md-field-bg: #E0E2E8; 
-      --md-field-focus: #D1E4FF; 
-      --md-outline: #73777F; 
-      --md-error: #BA1A1A;
-      --md-success: #006D3B;
-      --md-inverse-surface: #2F3033;
-      --md-inverse-on-surface: #F0F0F3;
+      /* ===== M3 TOKEN SYSTEM (Android 16 Style) ===== */
+      --md-sys-color-primary: #006495;
+      --md-sys-color-on-primary: #FFFFFF;
+      --md-sys-color-primary-container: #CBE6FF;
+      --md-sys-color-on-primary-container: #001E30;
       
-      /* Shapes & Shadows */
-      --shape-field: 24px;
-      --shape-card: 32px;
-      --shape-menu: 16px; /* Bordes del menú flotante */
-      --shadow-card: 0px 4px 8px 3px rgba(0, 99, 155, 0.08);
-      --shadow-menu: 0px 4px 12px 4px rgba(0, 0, 0, 0.15); /* Sombra elevada */
+      --md-sys-color-surface: #F8F9FF; /* Fondo general */
+      --md-sys-color-surface-container: #FFFFFF; /* Tarjetas */
+      --md-sys-color-surface-container-high: #E8EDF5; /* Inputs */
+      
+      --md-sys-color-on-surface: #191C20;
+      --md-sys-color-on-surface-variant: #44474E;
+      --md-sys-color-outline: #74777F;
+      --md-sys-color-outline-variant: #C4C6CF;
+
+      /* Shapes */
+      --shape-full: 9999px;
+      --shape-extra-large: 28px;
+      --shape-large: 16px;
+
+      /* Animation */
+      --motion-easing-emphasized: cubic-bezier(0.2, 0.0, 0.0, 1.0);
+      --motion-duration-medium: 300ms;
     }
 
-    * { box-sizing: border-box; }
-    body { margin: 0; font-family: 'Roboto', sans-serif; background-color: var(--md-surface); color: var(--md-on-surface); display: flex; justify-content: center; min-height: 100vh; padding: 20px; -webkit-tap-highlight-color: transparent; }
-
-    .container { width: 100%; max-width: 680px; background: var(--md-surface-container); border-radius: var(--shape-card); padding: 40px; box-shadow: var(--shadow-card); position: relative; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     
-    header { margin-bottom: 32px; display: flex; justify-content: space-between; align-items: flex-start; }
-    h1 { font-size: 32px; line-height: 40px; font-weight: 400; margin: 0; color: var(--md-on-surface); letter-spacing: -0.5px; }
-    .credits { display: block; margin-top: 8px; font-size: 14px; color: var(--md-on-surface-variant); font-weight: 500; opacity: 0.8; }
-
-    /* SWITCH M3 */
-    .switch-container { background-color: var(--md-field-bg); border-radius: var(--shape-field); height: 56px; display: flex; justify-content: space-between; align-items: center; padding: 0 16px; margin-bottom: 24px; cursor: pointer; transition: background 0.2s; }
-    .switch-container:hover { background-color: #D2D6DE; }
-    .switch-label { font-size: 16px; color: var(--md-on-surface); margin-left: 8px; }
-    .m3-switch { position: relative; width: 52px; height: 32px; }
-    .m3-switch input { opacity: 0; width: 0; height: 0; }
-    .slider { position: absolute; top: 0; left: 0; right: 0; bottom: 0; border: 2px solid var(--md-outline); border-radius: 100px; transition: .3s; }
-    .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 6px; bottom: 6px; background-color: var(--md-outline); border-radius: 50%; transition: .3s; }
-    input:checked + .slider { background-color: var(--md-primary); border-color: var(--md-primary); }
-    input:checked + .slider:before { transform: translateX(20px) scale(1.3); background-color: var(--md-on-primary); }
-
-    /* CAMPOS DE TEXTO (Custom) */
-    .field-group { margin-bottom: 16px; position: relative; }
-    .md-filled-field { position: relative; background-color: var(--md-field-bg); border-radius: var(--shape-field); height: 56px; transition: background 0.2s; display: flex; align-items: center; }
-    .md-filled-field:focus-within { background-color: var(--md-field-focus); }
-    
-    .md-filled-field input, .md-filled-field textarea { width: 100%; height: 100%; padding: 24px 16px 8px 48px; font-size: 16px; font-family: 'Roboto', sans-serif; color: var(--md-on-surface); background: transparent; border: none; outline: none; z-index: 1; }
-    .md-filled-field textarea { min-height: 120px; resize: vertical; padding-top: 24px; }
-    .md-filled-field.textarea-container { height: auto; min-height: 120px; align-items: flex-start; }
-
-    /* Iconos y Labels */
-    .leading-icon, .trailing-icon { position: absolute; top: 50%; transform: translateY(-50%); font-size: 24px; color: var(--md-on-surface-variant); pointer-events: none; z-index: 2; }
-    .leading-icon { left: 16px; }
-    .trailing-icon { right: 16px; pointer-events: none; transition: transform 0.3s; }
-    .md-filled-field:focus-within .leading-icon { color: var(--md-primary); }
-    .md-filled-field:focus-within .trailing-icon { transform: translateY(-50%) rotate(180deg); color: var(--md-primary); }
-    
-    .md-filled-field.textarea-container .leading-icon { top: 24px; transform: none; }
-    .md-filled-field.textarea-container label { top: 24px; transform: none; }
-
-    .md-filled-field label { position: absolute; left: 48px; top: 54%; transform: translateY(-50%); color: var(--md-on-surface-variant); font-size: 16px; transition: all 0.2s; pointer-events: none; z-index: 2; font-weight: 400; }
-    
-    /* Flotación del Label */
-    .md-filled-field input:focus + label, .md-filled-field input:not(:placeholder-shown) + label,
-    .md-filled-field textarea:focus + label, .md-filled-field textarea:not(:placeholder-shown) + label { 
-      top: 16px; transform: translateY(-100%); font-size: 12px; color: var(--md-primary); font-weight: 600; 
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background-color: var(--md-sys-color-surface);
+      color: var(--md-sys-color-on-surface);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
 
-    /* ===== MENÚ FLOTANTE M3 (El reemplazo del cuadro blanco) ===== */
-    .m3-menu {
-      position: absolute;
-      top: 100%; left: 0; right: 0;
-      background-color: var(--md-surface-container);
-      border-radius: var(--shape-menu);
-      box-shadow: var(--shadow-menu);
+    /* CONTENEDOR PRINCIPAL */
+    .app-frame {
+      width: 100%;
+      max-width: 600px; /* Ancho máximo de móvil */
+      padding: 20px 24px 120px 24px; /* Padding bottom extra para scroll */
+      position: relative;
+    }
+
+    /* HEADER */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 16px;
+      margin-bottom: 32px;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 400;
+      color: var(--md-sys-color-on-surface);
+      margin: 0;
+    }
+    
+    .subtitle {
+      font-size: 14px;
+      color: var(--md-sys-color-on-surface-variant);
       margin-top: 4px;
-      padding: 8px 0;
-      max-height: 280px;
-      overflow-y: auto;
-      z-index: 100;
-      display: none; /* Oculto por defecto */
-      opacity: 0;
-      transform: scale(0.95);
-      transform-origin: top center;
-      transition: opacity 0.2s, transform 0.2s;
-    }
-    
-    .m3-menu.open {
-      display: block;
-      opacity: 1;
-      transform: scale(1);
     }
 
-    .m3-menu-item {
-      padding: 12px 24px;
-      font-size: 15px;
-      color: var(--md-on-surface);
+    .icon-btn {
+      background: transparent;
+      border: none;
+      color: var(--md-sys-color-on-surface-variant);
+      padding: 12px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .icon-btn:active { background-color: var(--md-sys-color-surface-container-high); }
+
+    /* TARJETA MODO MANUAL (SWITCH) */
+    .card-switch {
+      background-color: var(--md-sys-color-surface-container);
+      border-radius: var(--shape-large);
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid #EFF1F6;
+    }
+
+    .switch-text { font-size: 16px; font-weight: 500; }
+
+    /* M3 SWITCH COMPONENT */
+    .m3-switch {
+      position: relative;
+      width: 52px; height: 32px;
+      flex-shrink: 0;
+    }
+    .m3-switch input { opacity: 0; width: 0; height: 0; }
+    .track {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background-color: var(--md-sys-color-outline-variant);
+      border-radius: 100px;
+      transition: .3s;
+      border: 2px solid var(--md-sys-color-outline);
+    }
+    .thumb {
+      position: absolute; height: 16px; width: 16px;
+      left: 6px; bottom: 6px;
+      background-color: var(--md-sys-color-outline);
+      border-radius: 50%;
+      transition: .3s var(--motion-easing-emphasized);
+    }
+    
+    /* Estados del Switch */
+    input:checked + .track {
+      background-color: var(--md-sys-color-primary);
+      border-color: var(--md-sys-color-primary);
+    }
+    input:checked + .track .thumb {
+      background-color: var(--md-sys-color-on-primary);
+      transform: translateX(20px) scale(1.5);
+    }
+
+    /* INPUTS (Estilo Nativo Android) */
+    .input-wrapper {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .m3-input {
+      width: 100%;
+      min-height: 56px;
+      background-color: var(--md-sys-color-surface-container-high);
+      border: 1px solid transparent; /* Para evitar saltos al enfocar */
+      border-radius: var(--shape-extra-large); /* Curva muy pronunciada M3 */
+      padding: 24px 16px 8px 16px; /* Espacio para label flotante */
+      font-size: 16px;
+      font-family: 'Roboto', sans-serif;
+      color: var(--md-sys-color-on-surface);
+      outline: none;
+      transition: all 0.2s;
+      cursor: text;
+    }
+
+    /* Inputs "Seleccionables" (readonly) parecen botones */
+    .m3-input.selectable {
+      cursor: pointer;
+      caret-color: transparent; /* Ocultar cursor de texto */
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' viewBox='0 -960 960 960' width='24' fill='%2344474E'%3E%3Cpath d='M480-360 280-560h400L480-360Z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+    }
+
+    .m3-input:focus {
+      background-color: var(--md-sys-color-surface-container);
+      border: 1px solid var(--md-sys-color-primary);
+    }
+
+    .m3-label {
+      position: absolute;
+      left: 16px;
+      top: 18px;
+      font-size: 16px;
+      color: var(--md-sys-color-on-surface-variant);
+      pointer-events: none;
+      transition: all 0.2s var(--motion-easing-emphasized);
+    }
+
+    /* Flotación del Label */
+    .m3-input:focus ~ .m3-label,
+    .m3-input:not(:placeholder-shown) ~ .m3-label {
+      top: 8px;
+      font-size: 12px;
+      color: var(--md-sys-color-primary);
+      font-weight: 500;
+    }
+
+    /* Área de Texto */
+    textarea.m3-input {
+      min-height: 120px;
+      resize: none;
+      border-radius: 20px;
+    }
+
+    /* BOTÓN FAB EXTENDIDO (Acción Principal) */
+    .fab-container {
+      position: fixed;
+      bottom: 24px;
+      left: 0; right: 0;
+      display: flex;
+      justify-content: center;
+      pointer-events: none; /* Dejar pasar clics en los lados */
+      z-index: 10;
+    }
+
+    .btn-primary {
+      pointer-events: auto;
+      background-color: var(--md-sys-color-primary);
+      color: var(--md-sys-color-on-primary);
+      height: 56px;
+      padding: 0 32px;
+      border-radius: var(--shape-full);
+      border: none;
+      font-family: 'Roboto', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 4px 8px 3px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.96);
+      box-shadow: 0 2px 4px 2px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-primary:disabled {
+      background-color: var(--md-sys-color-surface-container-high);
+      color: var(--md-sys-color-on-surface-variant);
+      box-shadow: none;
+      opacity: 0.6;
+    }
+
+    /* ===== BOTTOM SHEET (Menú Deslizante) ===== */
+    .scrim {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 50;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s;
+      backdrop-filter: blur(2px);
+    }
+    
+    .scrim.open { opacity: 1; visibility: visible; }
+
+    .bottom-sheet {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background-color: var(--md-sys-color-surface-container);
+      border-radius: 28px 28px 0 0; /* Esquinas superiores redondeadas */
+      z-index: 60;
+      transform: translateY(100%);
+      transition: transform 0.4s var(--motion-easing-emphasized);
+      max-height: 85vh; /* Casi toda la pantalla */
+      display: flex;
+      flex-direction: column;
+    }
+
+    .scrim.open .bottom-sheet { transform: translateY(0); }
+
+    .sheet-handle {
+      width: 32px; height: 4px;
+      background-color: var(--md-sys-color-outline-variant);
+      border-radius: 2px;
+      align-self: center;
+      margin-top: 16px;
+      margin-bottom: 8px;
+    }
+
+    .sheet-header {
+      padding: 0 24px 16px 24px;
+    }
+    
+    .sheet-title {
+      font-size: 22px;
+      margin: 0 0 16px 0;
+      color: var(--md-sys-color-on-surface);
+    }
+
+    /* Buscador dentro del Sheet */
+    .sheet-search {
+      background-color: var(--md-sys-color-surface-container-high);
+      border-radius: var(--shape-full);
+      height: 48px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      color: var(--md-sys-color-on-surface);
+    }
+    .sheet-search input {
+      border: none; background: transparent;
+      margin-left: 8px; flex: 1;
+      font-size: 16px; outline: none;
+      color: var(--md-sys-color-on-surface);
+    }
+
+    .sheet-content {
+      overflow-y: auto;
+      padding-bottom: 32px;
+      flex: 1; /* Ocupa el resto */
+    }
+
+    .sheet-item {
+      padding: 16px 24px;
+      border-bottom: 1px solid #F0F0F0;
       cursor: pointer;
       transition: background 0.1s;
     }
+    .sheet-item:active { background-color: var(--md-sys-color-surface-container-high); }
     
-    .m3-menu-item:hover {
-      background-color: var(--md-surface-container-high);
+    .item-code {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--md-sys-color-primary);
+      margin-bottom: 2px;
     }
-    
-    .m3-menu-item strong {
-        color: var(--md-primary);
-        font-weight: 600;
+    .item-name {
+      font-size: 16px;
+      color: var(--md-sys-color-on-surface);
     }
-    
-    /* Scrollbar Bonito */
-    .m3-menu::-webkit-scrollbar { width: 6px; }
-    .m3-menu::-webkit-scrollbar-thumb { background-color: #C0C4CC; border-radius: 4px; }
 
-    /* BOTÓN */
-    .btn-filled { width: 100%; height: 56px; border: none; border-radius: 999px; background-color: var(--md-primary); color: var(--md-on-primary); font-size: 16px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 32px; transition: all 0.2s; font-family: 'Roboto', sans-serif; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-    .btn-filled:hover { background-color: #005688; transform: scale(1.005); }
-    .btn-filled:disabled { background-color: var(--md-field-bg); color: var(--md-on-surface-variant); opacity: 0.5; cursor: default; box-shadow: none; }
-
-    #skeleton { width: 100%; max-width: 680px; }
-    .sk-line { height: 56px; background: var(--md-field-bg); border-radius: var(--shape-field); margin-bottom: 16px; animation: pulse 1.5s infinite; }
-    @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } }
-
-    #toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(100px); background-color: var(--md-inverse-surface); color: var(--md-inverse-on-surface); padding: 14px 24px; border-radius: 99px; font-size: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); opacity: 0; transition: all 0.4s; z-index: 200; display: flex; align-items: center; gap: 12px; }
-    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-    #toast.error { background-color: var(--md-error); color: #fff; }
-    #toast.success { background-color: var(--md-success); color: #fff; }
-
+    /* Utilidades */
     .hidden { display: none !important; }
-    @media (max-width: 600px) { .container { padding: 24px; } h1 { font-size: 28px; } }
+    
+    /* Toast */
+    #toast {
+      position: fixed; bottom: 100px; left: 50%;
+      transform: translateX(-50%) scale(0.9);
+      background-color: #313033;
+      color: #F4EFF4;
+      padding: 14px 24px;
+      border-radius: 4px; /* Pequeño radio Toast clásico Android o full rounded */
+      border-radius: 99px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      opacity: 0; pointer-events: none;
+      transition: all 0.3s; z-index: 100;
+      display: flex; align-items: center; gap: 12px;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) scale(1); }
   </style>
 </head>
 
 <body>
 
-<div id="skeleton">
-  <div class="sk-line" style="height:80px; margin-bottom:32px; background:none"></div>
-  <div class="sk-line"></div><div class="sk-line"></div><div class="sk-line"></div>
-</div>
+  <div id="skeleton" class="app-frame" style="text-align:center; padding-top:100px;">
+    <div style="width:48px; height:48px; border:4px solid #E0E0E0; border-top-color: var(--md-sys-color-primary); border-radius:50%; animation:spin 1s linear infinite; margin:0 auto;"></div>
+    <p style="color:#888; margin-top:16px;">Cargando app...</p>
+    <style>@keyframes spin { 100% { transform: rotate(360deg); } }</style>
+  </div>
 
-<div id="app" class="container hidden">
+  <div id="app" class="app-frame hidden">
+    
+    <header>
+      <div>
+        <h1>Gastos</h1>
+        <div class="subtitle">Distribución y Prorrateo</div>
+      </div>
+      <button class="icon-btn" onclick="forzarRefresco()" title="Sincronizar">
+        <span class="material-symbols-rounded" id="iconSync">sync</span>
+      </button>
+    </header>
 
-  <header>
-    <div>
-      <h1>Distribución de Gastos</h1>
-      <span class="credits">Diseño: Jonathan Coral</span>
+    <div class="card-switch" onclick="document.getElementById('sinDistribucion').click()">
+      <span class="switch-text">Modo Manual</span>
+      <div class="m3-switch">
+        <input type="checkbox" id="sinDistribucion" onchange="toggleManual()">
+        <div class="track"><div class="thumb"></div></div>
+      </div>
     </div>
-    <button onclick="forzarRefresco()" id="btnRefrescar" style="background:none; border:none; cursor:pointer; color:var(--md-primary); padding:8px; border-radius:50%;" title="Sincronizar">
-      <span class="material-symbols-outlined" id="iconRefrescar">sync</span>
+
+    <div id="bloqueDistribucion">
+      <div class="input-wrapper">
+        <input type="text" id="opcionTexto" class="m3-input selectable" placeholder=" " readonly onclick="abrirBottomSheet('opcion')">
+        <label class="m3-label">Opción de distribución</label>
+        <input type="hidden" id="opcion">
+      </div>
+    </div>
+
+    <div id="bloqueManual" class="hidden">
+      <div class="input-wrapper">
+        <input type="text" id="co" class="m3-input" placeholder=" ">
+        <label class="m3-label">Centro de operación</label>
+      </div>
+      <div class="input-wrapper">
+        <input type="text" id="unTexto" class="m3-input selectable" placeholder=" " readonly onclick="abrirBottomSheet('un')">
+        <label class="m3-label">Unidad de negocio</label>
+        <input type="hidden" id="un">
+      </div>
+    </div>
+
+    <div class="input-wrapper">
+      <input type="text" id="servicioTexto" class="m3-input selectable" placeholder=" " readonly onclick="abrirBottomSheet('servicio')">
+      <label class="m3-label">Servicio</label>
+      <input type="hidden" id="servicio">
+    </div>
+
+    <div class="input-wrapper">
+      <input type="text" id="ccostoTexto" class="m3-input selectable" placeholder=" " readonly onclick="abrirBottomSheet('ccosto')">
+      <label class="m3-label">Centro de costo</label>
+      <input type="hidden" id="ccosto">
+    </div>
+
+    <div class="input-wrapper">
+      <input type="text" id="motivo" class="m3-input" placeholder=" " inputmode="numeric">
+      <label class="m3-label">Motivo</label>
+    </div>
+
+    <div class="input-wrapper">
+      <input type="text" id="tercero" class="m3-input" placeholder=" ">
+      <label class="m3-label">Tercero</label>
+    </div>
+
+    <div class="input-wrapper">
+      <input type="text" id="valor" class="m3-input" placeholder=" " inputmode="numeric">
+      <label class="m3-label">Valor Total</label>
+    </div>
+
+    <div class="input-wrapper">
+      <textarea id="nota" class="m3-input" placeholder=" "></textarea>
+      <label class="m3-label">Nota</label>
+    </div>
+
+  </div> <div class="fab-container hidden" id="fabContainer">
+    <button id="btnGenerar" class="btn-primary" onclick="generar()">
+      <span class="material-symbols-rounded">auto_fix_high</span>
+      Generar y Copiar
     </button>
-  </header>
-
-  <div class="switch-container" onclick="document.getElementById('sinDistribucion').click()">
-    <div style="display:flex; align-items:center;">
-       <span class="material-symbols-outlined" style="color:var(--md-on-surface-variant); margin-right:12px;">tune</span>
-       <span class="switch-label">Modo Manual</span>
-    </div>
-    <label class="m3-switch" onclick="event.stopPropagation()">
-      <input type="checkbox" id="sinDistribucion" onchange="toggleManual()">
-      <span class="slider"></span>
-    </label>
   </div>
 
-  <div id="bloqueDistribucion">
-    <div class="field-group">
-      <div class="md-filled-field">
-        <span class="material-symbols-outlined leading-icon">pie_chart</span>
-        <input type="text" id="opcionTexto" placeholder=" " autocomplete="off" readonly style="cursor: pointer;">
-        <label>Opción de distribución</label>
-        <span class="material-symbols-outlined trailing-icon">arrow_drop_down</span>
-        
-        <div id="menuOpcion" class="m3-menu"></div>
+  <div class="scrim" id="scrim" onclick="cerrarBottomSheet()">
+    <div class="bottom-sheet" id="sheet" onclick="event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      
+      <div class="sheet-header">
+        <h3 class="sheet-title" id="sheetTitle">Seleccionar</h3>
+        <div class="sheet-search">
+          <span class="material-symbols-rounded">search</span>
+          <input type="text" id="sheetSearchInput" placeholder="Buscar...">
+        </div>
       </div>
-      <input type="hidden" id="opcion">
+
+      <div class="sheet-content" id="sheetList">
+        </div>
     </div>
   </div>
 
-  <div id="bloqueManual" class="hidden">
-    <div class="field-group">
-      <div class="md-filled-field">
-        <span class="material-symbols-outlined leading-icon">settings</span>
-        <input type="text" id="co" placeholder=" ">
-        <label>Centro de operación</label>
-      </div>
-    </div>
-
-    <div class="field-group">
-      <div class="md-filled-field">
-        <span class="material-symbols-outlined leading-icon">business</span>
-        <input type="text" id="unTexto" placeholder=" " autocomplete="off">
-        <label>Unidad de negocio</label>
-        <span class="material-symbols-outlined trailing-icon">search</span>
-        <div id="menuUN" class="m3-menu"></div>
-      </div>
-      <input type="hidden" id="un">
-    </div>
+  <div id="toast">
+    <span class="material-symbols-rounded" id="toastIcon">info</span>
+    <span id="toastMsg">Mensaje</span>
   </div>
-
-  <div class="field-group">
-    <div class="md-filled-field">
-      <span class="material-symbols-outlined leading-icon">design_services</span>
-      <input type="text" id="servicioTexto" placeholder=" " autocomplete="off">
-      <label>Servicio</label>
-      <span class="material-symbols-outlined trailing-icon">search</span>
-      <div id="menuServicio" class="m3-menu"></div>
-    </div>
-    <input type="hidden" id="servicio">
-  </div>
-
-  <div class="field-group">
-    <div class="md-filled-field">
-      <span class="material-symbols-outlined leading-icon">account_balance</span>
-      <input type="text" id="ccostoTexto" placeholder=" " autocomplete="off">
-      <label>Centro de costo</label>
-      <span class="material-symbols-outlined trailing-icon">search</span>
-      <div id="menuCCosto" class="m3-menu"></div>
-    </div>
-    <input type="hidden" id="ccosto">
-  </div>
-
-  <div class="field-group">
-    <div class="md-filled-field">
-      <span class="material-symbols-outlined leading-icon">category</span>
-      <input type="text" id="motivo" placeholder=" ">
-      <label>Motivo</label>
-    </div>
-  </div>
-
-  <div class="field-group">
-    <div class="md-filled-field">
-      <span class="material-symbols-outlined leading-icon">person</span>
-      <input type="text" id="tercero" placeholder=" ">
-      <label>Tercero</label>
-    </div>
-  </div>
-
-  <div class="field-group">
-    <div class="md-filled-field">
-      <span class="material-symbols-outlined leading-icon">attach_money</span>
-      <input type="text" id="valor" inputmode="numeric" placeholder=" ">
-      <label>Valor Total</label>
-    </div>
-  </div>
-
-  <div class="field-group">
-    <div class="md-filled-field textarea-container">
-      <span class="material-symbols-outlined leading-icon">description</span>
-      <textarea id="nota" placeholder=" "></textarea>
-      <label>Nota</label>
-    </div>
-  </div>
-
-  <button id="btnGenerar" class="btn-filled" onclick="generar()">
-    <span class="material-symbols-outlined">auto_fix_high</span>
-    Generar y copiar
-  </button>
-
-</div>
-
-<div id="toast"><span class="material-symbols-outlined toast-icon">info</span><span id="toastMsg">Mensaje</span></div>
 
 <script>
-  // ==========================================
-  // URL DEL SCRIPT (TU BACKEND)
-  // ==========================================
-  const API_URL = "https://script.google.com/macros/s/AKfycbyI8BNbtgbuJBWF8qiFEQEhIYsqauPjlCGBripklzklUhvg_7LHK8Hn5YOLxQVZoDf_iw/exec"; 
+  // URL DEL BACKEND (GOOGLE APPS SCRIPT)
+  const API_URL = "
+https://script.google.com/macros/s/AKfycbyI8BNbtgbuJBWF8qiFEQEhIYsqauPjlCGBripklzklUhvg_7LHK8Hn5YOLxQVZoDf_iw/exec"; 
 
-  // Variables Globales de Datos
-  let datosGlobales = { opciones: [], servicios: [], ccostos: [], unidades: [] };
+  // Memoria local de datos
+  let datosGlobales = {};
+  let seleccionActual = null; // 'servicio', 'ccosto', etc.
 
+  // --- CONEXIÓN ---
   async function callGoogleScript(action, payload = {}) {
-    const body = JSON.stringify({ action: action, datos: payload });
-    const response = await fetch(API_URL, { method: "POST", body: body });
-    const json = await response.json();
-    if (json.status === 'error') throw new Error(json.message);
-    return json.data;
+    try {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ action, datos: payload })
+      });
+      const json = await response.json();
+      if (json.status === 'error') throw new Error(json.message);
+      return json.data;
+    } catch (e) {
+      throw e;
+    }
   }
 
-  function showToast(msg, type = 'info') {
-    const t = document.getElementById('toast');
-    const txt = document.getElementById('toastMsg');
-    const icon = t.querySelector('.toast-icon');
-    txt.textContent = msg; t.className = ''; 
-    if (type === 'success') { t.classList.add('success'); icon.textContent = 'check_circle'; }
-    else if (type === 'error') { t.classList.add('error'); icon.textContent = 'error'; }
-    else { icon.textContent = 'info'; }
-    void t.offsetWidth; t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
+  // --- LÓGICA DE INTERFAZ ---
+  window.onload = function() {
+    // Service Worker
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+    
+    // Formato moneda
+    const inputValor = document.getElementById('valor');
+    inputValor.addEventListener('input', function(e) {
+      let val = this.value.replace(/\D/g, '');
+      this.value = val ? val.replace(/\B(?=(\d{3})+(?!\d))/g, ".") : '';
+    });
+
+    // Cargar datos
+    cargarDatos();
+    
+    // Configurar buscador del Bottom Sheet
+    document.getElementById('sheetSearchInput').addEventListener('input', (e) => {
+        filtrarListaSheet(e.target.value);
+    });
+  };
+
+  function cargarDatos() {
+    callGoogleScript('cargarDatosIniciales')
+      .then(datos => {
+        datosGlobales = datos;
+        document.getElementById('skeleton').classList.add('hidden');
+        document.getElementById('app').classList.remove('hidden');
+        document.getElementById('fabContainer').classList.remove('hidden');
+      })
+      .catch(err => showToast('Error de conexión', 'error'));
+  }
+
+  // --- BOTTOM SHEET LOGIC (EL CORAZÓN DE LA APP) ---
+  function abrirBottomSheet(tipo) {
+    seleccionActual = tipo;
+    const sheetTitle = document.getElementById('sheetTitle');
+    const sheetList = document.getElementById('sheetList');
+    const searchInput = document.getElementById('sheetSearchInput');
+    
+    // Reset
+    sheetList.innerHTML = '';
+    searchInput.value = '';
+    
+    // Títulos y Datos
+    let datos = [];
+    if (tipo === 'opcion') { sheetTitle.innerText = 'Opciones'; datos = datosGlobales.opciones; }
+    else if (tipo === 'servicio') { sheetTitle.innerText = 'Servicios'; datos = datosGlobales.servicios; }
+    else if (tipo === 'ccosto') { sheetTitle.innerText = 'Centros de Costo'; datos = datosGlobales.ccostos; }
+    else if (tipo === 'un') { sheetTitle.innerText = 'Unidades de Negocio'; datos = datosGlobales.unidades; }
+
+    // Renderizar lista inicial
+    renderizarItems(datos);
+
+    // Abrir animación
+    const scrim = document.getElementById('scrim');
+    scrim.classList.add('open');
+    searchInput.focus(); // Enfocar buscador automáticamente
+  }
+
+  function renderizarItems(lista) {
+    const container = document.getElementById('sheetList');
+    container.innerHTML = '';
+    
+    if (lista.length === 0) {
+        container.innerHTML = '<div style="padding:20px; text-align:center; color:#888">No se encontraron resultados</div>';
+        return;
+    }
+
+    lista.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'sheet-item';
+      div.onclick = () => seleccionarItem(item);
+      
+      div.innerHTML = `
+        <span class="item-code">${item.codigo}</span>
+        <span class="item-name">${item.nombre}</span>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  function filtrarListaSheet(texto) {
+    const tipo = seleccionActual;
+    let datos = [];
+    if (tipo === 'opcion') datos = datosGlobales.opciones;
+    else if (tipo === 'servicio') datos = datosGlobales.servicios;
+    else if (tipo === 'ccosto') datos = datosGlobales.ccostos;
+    else if (tipo === 'un') datos = datosGlobales.unidades;
+
+    const filtrados = datos.filter(item => {
+        const busqueda = (item.codigo + ' ' + item.nombre).toLowerCase();
+        return busqueda.includes(texto.toLowerCase());
+    });
+    renderizarItems(filtrados);
+  }
+
+  function seleccionarItem(item) {
+    // 1. Llenar el input VISIBLE con "CÓDIGO - NOMBRE"
+    const inputVisual = document.getElementById(seleccionActual + 'Texto');
+    inputVisual.value = `${item.codigo} — ${item.nombre}`;
+    
+    // 2. Llenar el input OCULTO solo con "CÓDIGO"
+    const inputHidden = document.getElementById(seleccionActual);
+    if (inputHidden) inputHidden.value = item.codigo;
+    else if (seleccionActual === 'opcion') document.getElementById('opcion').value = item.codigo; // Caso especial opción
+
+    cerrarBottomSheet();
+  }
+
+  function cerrarBottomSheet() {
+    document.getElementById('scrim').classList.remove('open');
   }
 
   function toggleManual() {
-    const activo = document.getElementById('sinDistribucion').checked;
+    const check = document.getElementById('sinDistribucion');
     const bDist = document.getElementById('bloqueDistribucion');
     const bMan = document.getElementById('bloqueManual');
-    if (activo) { bDist.style.display = 'none'; bMan.classList.remove('hidden'); }
-    else { bDist.style.display = 'block'; bMan.classList.add('hidden'); }
-  }
-
-  // ===== SISTEMA DE AUTOCOMPLETADO M3 (CUSTOM) =====
-  function configurarAutocomplete(inputId, hiddenId, menuId, datosOrigen) {
-    const input = document.getElementById(inputId);
-    const hidden = document.getElementById(hiddenId);
-    const menu = document.getElementById(menuId);
     
-    // Función para dibujar el menú
-    function renderMenu(filtro = '') {
-        menu.innerHTML = '';
-        const filtrados = datosOrigen.filter(item => {
-            const texto = (item.codigo + ' ' + item.nombre).toLowerCase();
-            return texto.includes(filtro.toLowerCase());
-        });
-
-        if (filtrados.length === 0) {
-            menu.classList.remove('open');
-            return;
-        }
-
-        filtrados.forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'm3-menu-item';
-            div.innerHTML = `<strong>${item.codigo}</strong> – ${item.nombre}`;
-            
-            div.onclick = () => {
-                input.value = item.codigo; // Mostramos el código
-                hidden.value = item.codigo;
-                menu.classList.remove('open');
-            };
-            menu.appendChild(div);
-        });
-        menu.classList.add('open');
+    if (check.checked) {
+        bDist.classList.add('hidden');
+        bMan.classList.remove('hidden');
+    } else {
+        bDist.classList.remove('hidden');
+        bMan.classList.add('hidden');
     }
-
-    // Eventos
-    input.addEventListener('input', (e) => {
-        hidden.value = ''; // Reset valor real si edita
-        renderMenu(e.target.value);
-    });
-
-    input.addEventListener('focus', () => renderMenu(input.value));
-    
-    // Cerrar si clic fuera
-    document.addEventListener('click', (e) => {
-        if (!input.contains(e.target) && !menu.contains(e.target)) {
-            menu.classList.remove('open');
-        }
-    });
   }
-
-  // Configuración especial para "Opción" (Dropdown puro)
-  function configurarDropdown(inputId, hiddenId, menuId, datosOrigen) {
-      const input = document.getElementById(inputId);
-      const hidden = document.getElementById(hiddenId);
-      const menu = document.getElementById(menuId);
-
-      input.addEventListener('click', () => {
-          menu.innerHTML = '';
-          datosOrigen.forEach(item => {
-              const div = document.createElement('div');
-              div.className = 'm3-menu-item';
-              div.innerHTML = `<strong>${item.codigo}</strong> – ${item.nombre}`;
-              div.onclick = () => {
-                  input.value = item.codigo + ' - ' + item.nombre;
-                  hidden.value = item.codigo;
-                  menu.classList.remove('open');
-              };
-              menu.appendChild(div);
-          });
-          menu.classList.toggle('open');
-      });
-
-      document.addEventListener('click', (e) => {
-          if (!input.contains(e.target) && !menu.contains(e.target)) {
-              menu.classList.remove('open');
-          }
-      });
-  }
-
-  window.onload = function () {
-    const inputValor = document.getElementById('valor');
-    if(inputValor) {
-        inputValor.addEventListener('input', function(e) {
-            let value = this.value.replace(/\D/g, '');
-            if (value) { this.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
-            else { this.value = ''; }
-        });
-    }
-
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
-
-    callGoogleScript('cargarDatosIniciales')
-      .then(datos => {
-        datosGlobales = datos; // Guardar en memoria
-        
-        // Inicializar los componentes M3
-        configurarDropdown('opcionTexto', 'opcion', 'menuOpcion', datos.opciones);
-        configurarAutocomplete('servicioTexto', 'servicio', 'menuServicio', datos.servicios);
-        configurarAutocomplete('ccostoTexto', 'ccosto', 'menuCCosto', datos.ccostos);
-        configurarAutocomplete('unTexto', 'un', 'menuUN', datos.unidades);
-        
-        document.getElementById('skeleton').style.display = 'none';
-        document.getElementById('app').classList.remove('hidden');
-      })
-      .catch(err => {
-        console.error(err);
-        showToast('Error de conexión', 'error');
-      });
-  };
 
   function forzarRefresco() {
-    const icon = document.getElementById('iconRefrescar');
-    icon.style.transform = "rotate(360deg)";
-    showToast('Sincronizando...', 'info');
-
-    callGoogleScript('limpiarCache')
-      .then(datos => {
+    const icon = document.getElementById('iconSync');
+    icon.style.transition = 'transform 1s';
+    icon.style.transform = 'rotate(360deg)';
+    showToast('Sincronizando...');
+    
+    callGoogleScript('limpiarCache').then(datos => {
         datosGlobales = datos;
-        // Reinicializar con nuevos datos
-        configurarDropdown('opcionTexto', 'opcion', 'menuOpcion', datos.opciones);
-        configurarAutocomplete('servicioTexto', 'servicio', 'menuServicio', datos.servicios);
-        configurarAutocomplete('ccostoTexto', 'ccosto', 'menuCCosto', datos.ccostos);
-        configurarAutocomplete('unTexto', 'un', 'menuUN', datos.unidades);
-        
-        icon.style.transform = "rotate(0deg)";
-        showToast('Actualizado', 'success');
-      })
-      .catch(err => showToast('Error al actualizar', 'error'));
+        icon.style.transform = 'rotate(0deg)';
+        showToast('Datos actualizados', 'success');
+    });
+  }
+
+  function showToast(msg, type='info') {
+    const t = document.getElementById('toast');
+    const icon = document.getElementById('toastIcon');
+    document.getElementById('toastMsg').innerText = msg;
+    
+    icon.innerText = type === 'success' ? 'check_circle' : (type === 'error' ? 'error' : 'info');
+    t.style.backgroundColor = type === 'error' ? '#BA1A1A' : (type==='success' ? '#006D3B' : '#313033');
+    
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
   }
 
   function generar() {
     const btn = document.getElementById('btnGenerar');
-    const original = btn.innerHTML;
+    const originalText = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = '<span class="material-symbols-outlined">hourglass_empty</span> ...';
-    
+    btn.innerHTML = 'Procesando...';
+
     const nota = document.getElementById('nota').value.trim();
-    const valorNumerico = Number(document.getElementById('valor').value.replace(/\D/g, ''));
-    
-    if (!/^\d{4}/.test(nota)) { showToast('La nota debe iniciar con 4 dígitos', 'error'); resetBtn(original); return; }
-    if (!document.getElementById('servicio').value || !document.getElementById('ccosto').value || !document.getElementById('motivo').value || !document.getElementById('tercero').value || valorNumerico <= 0) {
-      showToast('Campos incompletos', 'error'); resetBtn(original); return;
+    const valor = Number(document.getElementById('valor').value.replace(/\D/g, ''));
+
+    // Validaciones simples
+    if (!/^\d{4}/.test(nota)) {
+        showToast('La nota debe iniciar con 4 dígitos', 'error');
+        resetBtn(btn, originalText); return;
     }
-    
+    if (valor <= 0) {
+        showToast('Ingrese un valor válido', 'error');
+        resetBtn(btn, originalText); return;
+    }
+
     const sinDistribucion = document.getElementById('sinDistribucion').checked;
-    const datos = {
-      sinDistribucion,
-      opcion: sinDistribucion ? null : document.getElementById('opcion').value,
-      co: sinDistribucion ? document.getElementById('co').value : null,
-      un: sinDistribucion ? document.getElementById('un').value : null,
-      servicio: document.getElementById('servicio').value,
-      motivo: document.getElementById('motivo').value,
-      ccosto: document.getElementById('ccosto').value,
-      tercero: document.getElementById('tercero').value,
-      valor: valorNumerico,
-      nota
+    
+    const payload = {
+        sinDistribucion,
+        opcion: sinDistribucion ? null : document.getElementById('opcion').value,
+        co: sinDistribucion ? document.getElementById('co').value : null,
+        un: sinDistribucion ? document.getElementById('un').value : null,
+        servicio: document.getElementById('servicio').value,
+        motivo: document.getElementById('motivo').value,
+        ccosto: document.getElementById('ccosto').value,
+        tercero: document.getElementById('tercero').value,
+        valor: valor,
+        nota
     };
 
-    callGoogleScript('generarTexto', datos)
-       .then(texto => {
+    // Validar campos requeridos según modo
+    if (!sinDistribucion && !payload.opcion) { showToast('Seleccione una opción', 'error'); resetBtn(btn, originalText); return; }
+    if (!payload.servicio || !payload.ccosto) { showToast('Faltan campos obligatorios', 'error'); resetBtn(btn, originalText); return; }
+
+    callGoogleScript('generarTexto', payload)
+      .then(texto => {
           navigator.clipboard.writeText(texto);
-          showToast('Copiado', 'success');
-          resetBtn(original);
-       })
-       .catch(err => {
+          showToast('¡Copiado!', 'success');
+          resetBtn(btn, originalText);
+      })
+      .catch(err => {
           showToast('Error: ' + err.message, 'error');
-          resetBtn(original);
-       });
+          resetBtn(btn, originalText);
+      });
   }
 
-  function resetBtn(content) {
-    const btn = document.getElementById('btnGenerar');
-    btn.disabled = false;
-    btn.innerHTML = content;
+  function resetBtn(btn, html) {
+      btn.disabled = false;
+      btn.innerHTML = html;
   }
 </script>
 
