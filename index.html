@@ -542,30 +542,35 @@
 
   // --- BOTTOM SHEET LOGIC (EL CORAZÓN DE LA APP) ---
   function abrirBottomSheet(tipo) {
-    seleccionActual = tipo;
-    const sheetTitle = document.getElementById('sheetTitle');
-    const sheetList = document.getElementById('sheetList');
-    const searchInput = document.getElementById('sheetSearchInput');
-    
-    // Reset
-    sheetList.innerHTML = '';
-    searchInput.value = '';
-    
-    // Títulos y Datos
-    let datos = [];
-    if (tipo === 'opcion') { sheetTitle.innerText = 'Opciones'; datos = datosGlobales.opciones; }
-    else if (tipo === 'servicio') { sheetTitle.innerText = 'Servicios'; datos = datosGlobales.servicios; }
-    else if (tipo === 'ccosto') { sheetTitle.innerText = 'Centros de costo'; datos = datosGlobales.ccostos; }
-    else if (tipo === 'un') { sheetTitle.innerText = 'Unidades de Negocio'; datos = datosGlobales.unidades; }
-
-    // Renderizar lista inicial
-    renderizarItems(datos);
-
-    // Abrir animación
-    const scrim = document.getElementById('scrim');
-    scrim.classList.add('open');
-    searchInput.focus(); // Enfocar buscador automáticamente
-  }
+      seleccionActual = tipo;
+      const sheetTitle = document.getElementById('sheetTitle');
+      const sheetList = document.getElementById('sheetList');
+      const searchInput = document.getElementById('sheetSearchInput');
+      
+      // Reset
+      sheetList.innerHTML = '';
+      searchInput.value = '';
+      
+      // Títulos y Datos
+      let datos = [];
+      if (tipo === 'opcion') { sheetTitle.innerText = 'Opciones'; datos = datosGlobales.opciones; }
+      else if (tipo === 'servicio') { sheetTitle.innerText = 'Servicios'; datos = datosGlobales.servicios; }
+      else if (tipo === 'ccosto') { sheetTitle.innerText = 'Centros de Costo'; datos = datosGlobales.ccostos; }
+      else if (tipo === 'un') { sheetTitle.innerText = 'Unidades de Negocio'; datos = datosGlobales.unidades; }
+      
+      // --- ESTAS SON LAS LÍNEAS QUE FALTABAN ---
+      else if (tipo === 'co') { sheetTitle.innerText = 'Centros de Operación'; datos = datosGlobales.centros; }
+      else if (tipo === 'motivo') { sheetTitle.innerText = 'Motivos'; datos = datosGlobales.motivos; }
+      // ----------------------------------------
+  
+      renderizarItems(datos);
+  
+      // Abrir animación
+      const scrim = document.getElementById('scrim');
+      scrim.classList.add('open');
+      // Pequeño delay para asegurar foco en móviles
+      setTimeout(() => searchInput.focus(), 100);
+    }
 
   function renderizarItems(lista) {
     const container = document.getElementById('sheetList');
@@ -590,19 +595,25 @@
   }
 
   function filtrarListaSheet(texto) {
-    const tipo = seleccionActual;
-    let datos = [];
-    if (tipo === 'opcion') datos = datosGlobales.opciones;
-    else if (tipo === 'servicio') datos = datosGlobales.servicios;
-    else if (tipo === 'ccosto') datos = datosGlobales.ccostos;
-    else if (tipo === 'un') datos = datosGlobales.unidades;
-
-    const filtrados = datos.filter(item => {
-        const busqueda = (item.codigo + ' ' + item.nombre).toLowerCase();
-        return busqueda.includes(texto.toLowerCase());
-    });
-    renderizarItems(filtrados);
-  }
+      const tipo = seleccionActual; // Usamos la variable global
+      let datos = [];
+      
+      if (tipo === 'opcion') datos = datosGlobales.opciones;
+      else if (tipo === 'servicio') datos = datosGlobales.servicios;
+      else if (tipo === 'ccosto') datos = datosGlobales.ccostos;
+      else if (tipo === 'un') datos = datosGlobales.unidades;
+      
+      // --- ESTAS SON LAS LÍNEAS QUE FALTABAN ---
+      else if (tipo === 'co') datos = datosGlobales.centros;
+      else if (tipo === 'motivo') datos = datosGlobales.motivos;
+      // ----------------------------------------
+  
+      const filtrados = datos.filter(item => {
+          const busqueda = (item.codigo + ' ' + item.nombre).toLowerCase();
+          return busqueda.includes(texto.toLowerCase());
+      });
+      renderizarItems(filtrados);
+    }
 
   function seleccionarItem(item) {
     // 1. Llenar el input VISIBLE con "CÓDIGO - NOMBRE"
