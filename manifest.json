@@ -1,6 +1,6 @@
 {
-  "name": "Distribución de Gastos",
-  "short_name": "Gastos",
+  "name": "Prorrateo de Unidades de Negocio ",
+  "short_name": "Distribución",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#F0F3F8",
