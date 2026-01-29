@@ -410,16 +410,18 @@
     </div>
 
     <div id="bloqueManual" class="hidden">
-      <div class="input-wrapper">
-        <input type="text" id="co" class="m3-input" placeholder=" ">
-        <label class="m3-label">Centro de operación</label>
-      </div>
-      <div class="input-wrapper">
-        <input type="text" id="unTexto" class="m3-input selectable" placeholder=" " readonly onclick="abrirBottomSheet('un')">
-        <label class="m3-label">Unidad de negocio</label>
-        <input type="hidden" id="un">
-      </div>
-    </div>
+          <div class="input-wrapper">
+            <input type="text" id="coTexto" class="m3-input selectable" placeholder=" " readonly onclick="abrirBottomSheet('co')">
+            <label class="m3-label">Centro de operación</label>
+            <input type="hidden" id="co">
+          </div>
+          
+          <div class="input-wrapper">
+            <input type="text" id="unTexto" class="m3-input selectable" placeholder=" " readonly onclick="abrirBottomSheet('un')">
+            <label class="m3-label">Unidad de negocio</label>
+            <input type="hidden" id="un">
+          </div>
+        </div>
 
     <div class="input-wrapper">
       <input type="text" id="servicioTexto" class="m3-input selectable" placeholder=" " readonly onclick="abrirBottomSheet('servicio')">
@@ -434,9 +436,10 @@
     </div>
 
     <div class="input-wrapper">
-      <input type="text" id="motivo" class="m3-input" placeholder=" " inputmode="numeric">
-      <label class="m3-label">Motivo</label>
-    </div>
+          <input type="text" id="motivoTexto" class="m3-input selectable" placeholder=" " readonly onclick="abrirBottomSheet('motivo')">
+          <label class="m3-label">Motivo</label>
+          <input type="hidden" id="motivo">
+        </div>
 
     <div class="input-wrapper">
       <input type="text" id="tercero" class="m3-input" placeholder=" ">
