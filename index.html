@@ -658,13 +658,12 @@
     const tipo = seleccionActual; 
     let datos = [];
     
-    else if (tipo === 'motivo') {
+    if (tipo === 'motivo') {
           const ccCode = document.getElementById('ccosto').value;
           const ccObj = datosGlobales.ccostos.find(c => c.codigo == ccCode);
           const grupoRequerido = (ccObj && ccObj.grupo) ? ccObj.grupo.trim() : "";
           
           if (grupoRequerido !== "") {
-            // Aplicamos la misma lógica inclusiva al buscar
             datos = datosGlobales.motivos.filter(m => {
               const grupoMotivo = m.grupo ? m.grupo.trim() : "";
               return grupoMotivo === grupoRequerido || grupoMotivo === "";
@@ -673,7 +672,6 @@
             datos = datosGlobales.motivos;
           }
         }
-    }
     else if (tipo === 'opcion') datos = datosGlobales.opciones;
     else if (tipo === 'servicio') datos = datosGlobales.servicios;
     else if (tipo === 'ccosto') datos = datosGlobales.ccostos;
