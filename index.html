@@ -748,8 +748,25 @@
   }
 
   function generar() {
-    const btn = document.getElementById('btnGenerar');
-    const originalText = btn.innerHTML; 
+      const btn = document.getElementById('btnGenerar');
+      const originalText = btn.innerHTML; 
+      
+      // Obtenemos los valores actuales de los inputs ocultos
+      const ccCode = document.getElementById('ccosto').value;
+      const motCode = document.getElementById('motivo').value;
+  
+      // --- INICIO NUEVA VALIDACIÓN DE GRUPOS ---
+      const ccObj = datosGlobales.ccostos.find(c => c.codigo == ccCode);
+      const motObj = datosGlobales.motivos.find(m => m.codigo == motCode);
+  
+      const grupoCC = (ccObj && ccObj.grupo) ? ccObj.grupo.trim() : "";
+      const grupoMot = (motObj && motObj.grupo) ? motObj.grupo.trim() : "";
+  
+      // Si el CC tiene grupo y el motivo tiene un grupo diferente (y no es vacío)
+      if (grupoCC !== "" && grupoMot !== "" && grupoCC !== grupoMot) {
+          showToast(`El grupo del motivo (${grupoMot}) no coincide con el del C.Costo (${grupoCC})`, 'error');
+          return; // Detiene la ejecución aquí
+      }
     
     btn.disabled = true;
     btn.innerHTML = '<span class="material-symbols-rounded" style="animation: spin 1s linear infinite; margin-right: 8px;">progress_activity</span> Procesando...';
