@@ -595,15 +595,24 @@
     
     let datos = [];
 
+// --- LÓGICA DE FILTRADO PARA MOTIVOS (CORREGIDA E INCLUSIVA) ---
     if (tipo === 'motivo') {
       sheetTitle.innerText = 'Motivos';
+      
       const ccCode = document.getElementById('ccosto').value; 
       const ccObj = datosGlobales.ccostos.find(c => c.codigo == ccCode);
-      const grupoRequerido = ccObj ? ccObj.grupo : "";
+      
+      // Obtenemos el grupo y quitamos espacios en blanco
+      const grupoRequerido = (ccObj && ccObj.grupo) ? ccObj.grupo.trim() : "";
 
-      if (grupoRequerido) {
-        datos = datosGlobales.motivos.filter(m => m.grupo == grupoRequerido);
+      if (grupoRequerido !== "") {
+        // FILTRADO: Que coincida el grupo O que el motivo no tenga grupo definido
+        datos = datosGlobales.motivos.filter(m => {
+          const grupoMotivo = m.grupo ? m.grupo.trim() : "";
+          return grupoMotivo === grupoRequerido || grupoMotivo === "";
+        });
       } else {
+        // Si el CC no tiene grupo, se muestran todos los motivos
         datos = datosGlobales.motivos;
       }
     }
@@ -649,11 +658,21 @@
     const tipo = seleccionActual; 
     let datos = [];
     
-    if (tipo === 'motivo') {
-      const ccCode = document.getElementById('ccosto').value;
-      const ccObj = datosGlobales.ccostos.find(c => c.codigo == ccCode);
-      const grupoRequerido = ccObj ? ccObj.grupo : "";
-      datos = grupoRequerido ? datosGlobales.motivos.filter(m => m.grupo == grupoRequerido) : datosGlobales.motivos;
+    else if (tipo === 'motivo') {
+          const ccCode = document.getElementById('ccosto').value;
+          const ccObj = datosGlobales.ccostos.find(c => c.codigo == ccCode);
+          const grupoRequerido = (ccObj && ccObj.grupo) ? ccObj.grupo.trim() : "";
+          
+          if (grupoRequerido !== "") {
+            // Aplicamos la misma lógica inclusiva al buscar
+            datos = datosGlobales.motivos.filter(m => {
+              const grupoMotivo = m.grupo ? m.grupo.trim() : "";
+              return grupoMotivo === grupoRequerido || grupoMotivo === "";
+            });
+          } else {
+            datos = datosGlobales.motivos;
+          }
+        }
     }
     else if (tipo === 'opcion') datos = datosGlobales.opciones;
     else if (tipo === 'servicio') datos = datosGlobales.servicios;
