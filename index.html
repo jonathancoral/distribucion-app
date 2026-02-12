@@ -597,25 +597,19 @@
 
 // --- LÓGICA DE FILTRADO PARA MOTIVOS (CORREGIDA E INCLUSIVA) ---
     if (tipo === 'motivo') {
-      sheetTitle.innerText = 'Motivos';
-      
-      const ccCode = document.getElementById('ccosto').value; 
-      const ccObj = datosGlobales.ccostos.find(c => c.codigo == ccCode);
-      
-      // Obtenemos el grupo y quitamos espacios en blanco
-      const grupoRequerido = (ccObj && ccObj.grupo) ? ccObj.grupo.trim() : "";
-
-      if (grupoRequerido !== "") {
-        // FILTRADO: Que coincida el grupo O que el motivo no tenga grupo definido
-        datos = datosGlobales.motivos.filter(m => {
-          const grupoMotivo = m.grupo ? m.grupo.trim() : "";
-          return grupoMotivo === grupoRequerido || grupoMotivo === "";
-        });
-      } else {
-        // Si el CC no tiene grupo, se muestran todos los motivos
-        datos = datosGlobales.motivos;
-      }
-    }
+          const ccCode = document.getElementById('ccosto').value; 
+          const ccObj = datosGlobales.ccostos.find(c => String(c.codigo).trim() === String(ccCode).trim());
+          const grupoRequerido = (ccObj && ccObj.grupo) ? String(ccObj.grupo).trim() : "";
+    
+          if (grupoRequerido !== "") {
+            datos = datosGlobales.motivos.filter(m => {
+              const grupoMotivo = m.grupo ? String(m.grupo).trim() : "";
+              return grupoMotivo === grupoRequerido || grupoMotivo === "";
+            });
+          } else {
+            datos = datosGlobales.motivos;
+          }
+        }
     else if (tipo === 'opcion') { sheetTitle.innerText = 'Opciones'; datos = datosGlobales.opciones; }
     else if (tipo === 'servicio') { sheetTitle.innerText = 'Servicios'; datos = datosGlobales.servicios; }
     else if (tipo === 'ccosto') { sheetTitle.innerText = 'Centros de costo'; datos = datosGlobales.ccostos; }
