@@ -17,72 +17,343 @@
 
   <style>
     :root {
+      /* ===== M3 TOKEN SYSTEM (Android 16 Style) ===== */
       --md-sys-color-primary: #006495;
       --md-sys-color-on-primary: #FFFFFF;
       --md-sys-color-primary-container: #CBE6FF;
       --md-sys-color-on-primary-container: #001E30;
-      --md-sys-color-surface: #F8F9FF;
-      --md-sys-color-surface-container: #FFFFFF;
-      --md-sys-color-surface-container-high: #E8EDF5;
+      
+      --md-sys-color-surface: #F8F9FF; /* Fondo general */
+      --md-sys-color-surface-container: #FFFFFF; /* Tarjetas */
+      --md-sys-color-surface-container-high: #E8EDF5; /* Inputs */
+      
       --md-sys-color-on-surface: #191C20;
       --md-sys-color-on-surface-variant: #44474E;
       --md-sys-color-outline: #74777F;
       --md-sys-color-outline-variant: #C4C6CF;
+
+      /* Shapes */
       --shape-full: 9999px;
       --shape-extra-large: 28px;
       --shape-large: 16px;
+
+      /* Animation */
       --motion-easing-emphasized: cubic-bezier(0.2, 0.0, 0.0, 1.0);
+      --motion-duration-medium: 300ms;
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    body { margin: 0; font-family: 'Roboto', sans-serif; background-color: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface); display: flex; justify-content: center; min-height: 100vh; }
-    .app-frame { width: 100%; max-width: 600px; padding: 20px 24px 120px 24px; position: relative; }
-    header { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; margin-bottom: 32px; }
-    h1 { font-size: 28px; font-weight: 400; margin: 0; }
-    .subtitle { font-size: 14px; color: var(--md-sys-color-on-surface-variant); margin-top: 4px; }
-    .icon-btn { background: transparent; border: none; color: var(--md-sys-color-on-surface-variant); padding: 12px; border-radius: 50%; cursor: pointer; }
+    
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background-color: var(--md-sys-color-surface);
+      color: var(--md-sys-color-on-surface);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-    .card-switch { background-color: var(--md-sys-color-surface-container); border-radius: var(--shape-large); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border: 1px solid #EFF1F6; }
-    .m3-switch { position: relative; width: 52px; height: 32px; }
+    /* CONTENEDOR PRINCIPAL */
+    .app-frame {
+      width: 100%;
+      max-width: 600px; /* Ancho máximo de móvil */
+      padding: 20px 24px 120px 24px; /* Padding bottom extra para scroll */
+      position: relative;
+    }
+
+    /* HEADER */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 16px;
+      margin-bottom: 32px;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 400;
+      color: var(--md-sys-color-on-surface);
+      margin: 0;
+    }
+    
+    .subtitle {
+      font-size: 14px;
+      color: var(--md-sys-color-on-surface-variant);
+      margin-top: 4px;
+    }
+
+    .icon-btn {
+      background: transparent;
+      border: none;
+      color: var(--md-sys-color-on-surface-variant);
+      padding: 12px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .icon-btn:active { background-color: var(--md-sys-color-surface-container-high); }
+
+    /* TARJETA NO PRORRATEAR (SWITCH) */
+    .card-switch {
+      background-color: var(--md-sys-color-surface-container);
+      border-radius: var(--shape-large);
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid #EFF1F6;
+    }
+
+    .switch-text { font-size: 16px; font-weight: 500; }
+
+    /* M3 SWITCH COMPONENT */
+    .m3-switch {
+      position: relative;
+      width: 52px; height: 32px;
+      flex-shrink: 0;
+    }
     .m3-switch input { opacity: 0; width: 0; height: 0; }
-    .track { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--md-sys-color-outline-variant); border-radius: 100px; border: 2px solid var(--md-sys-color-outline); transition: .3s; }
-    .thumb { position: absolute; height: 16px; width: 16px; left: 6px; bottom: 6px; background-color: var(--md-sys-color-outline); border-radius: 50%; transition: .3s; }
-    input:checked + .track { background-color: var(--md-sys-color-primary); border-color: var(--md-sys-color-primary); }
-    input:checked + .track .thumb { background-color: var(--md-sys-color-on-primary); transform: translateX(20px) scale(1.5); }
+    .track {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background-color: var(--md-sys-color-outline-variant);
+      border-radius: 100px;
+      transition: .3s;
+      border: 2px solid var(--md-sys-color-outline);
+    }
+    .thumb {
+      position: absolute; height: 16px; width: 16px;
+      left: 6px; bottom: 6px;
+      background-color: var(--md-sys-color-outline);
+      border-radius: 50%;
+      transition: .3s var(--motion-easing-emphasized);
+    }
+    
+    /* Estados del Switch */
+    input:checked + .track {
+      background-color: var(--md-sys-color-primary);
+      border-color: var(--md-sys-color-primary);
+    }
+    input:checked + .track .thumb {
+      background-color: var(--md-sys-color-on-primary);
+      transform: translateX(20px) scale(1.5);
+    }
 
-    .input-wrapper { position: relative; margin-bottom: 16px; }
-    .m3-input { width: 100%; min-height: 56px; background-color: var(--md-sys-color-surface-container-high); border: 1px solid transparent; border-radius: var(--shape-extra-large); padding: 24px 16px 8px 16px; font-size: 16px; font-family: 'Roboto', sans-serif; outline: none; }
-    .m3-input.selectable { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' viewBox='0 -960 960 960' width='24' fill='%2344474E'%3E%3Cpath d='M480-360 280-560h400L480-360Z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; }
-    .m3-input:focus { border: 1px solid var(--md-sys-color-primary); background-color: var(--md-sys-color-surface-container); }
-    .m3-label { position: absolute; left: 16px; top: 18px; font-size: 16px; color: var(--md-sys-color-on-surface-variant); pointer-events: none; transition: 0.2s; }
-    .m3-input:focus ~ .m3-label, .m3-input:not(:placeholder-shown) ~ .m3-label { top: 8px; font-size: 12px; color: var(--md-sys-color-primary); font-weight: 500; }
-    textarea.m3-input { min-height: 120px; resize: none; border-radius: 20px; }
+    /* INPUTS (Estilo Nativo Android) */
+    .input-wrapper {
+      position: relative;
+      margin-bottom: 16px;
+    }
 
-    .fab-container { position: fixed; bottom: 0; left: 0; right: 0; height: 100px; display: flex; justify-content: center; align-items: center; background: linear-gradient(to top, var(--md-sys-color-surface) 60%, transparent); pointer-events: none; z-index: 10; }
-    .btn-primary { pointer-events: auto; background-color: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); height: 56px; padding: 0 24px; border-radius: 16px; border: none; font-weight: 500; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); cursor: pointer; }
-    .btn-primary:disabled { background-color: #E2E7F0; color: #44474E; opacity: 1; pointer-events: none; }
+    .m3-input {
+      width: 100%;
+      min-height: 56px;
+      background-color: var(--md-sys-color-surface-container-high);
+      border: 1px solid transparent; /* Para evitar saltos al enfocar */
+      border-radius: var(--shape-extra-large); /* Curva muy pronunciada M3 */
+      padding: 24px 16px 8px 16px; /* Espacio para label flotante */
+      font-size: 16px;
+      font-family: 'Roboto', sans-serif;
+      color: var(--md-sys-color-on-surface);
+      outline: none;
+      transition: all 0.2s;
+      cursor: text;
+    }
 
-    .scrim { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); z-index: 50; opacity: 0; visibility: hidden; transition: 0.3s; backdrop-filter: blur(2px); }
+    /* Inputs "Seleccionables" (readonly) parecen botones */
+    .m3-input.selectable {
+      cursor: pointer;
+      caret-color: transparent; /* Ocultar cursor de texto */
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' viewBox='0 -960 960 960' width='24' fill='%2344474E'%3E%3Cpath d='M480-360 280-560h400L480-360Z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+    }
+
+    .m3-input:focus {
+      background-color: var(--md-sys-color-surface-container);
+      border: 1px solid var(--md-sys-color-primary);
+    }
+
+    .m3-label {
+      position: absolute;
+      left: 16px;
+      top: 18px;
+      font-size: 16px;
+      color: var(--md-sys-color-on-surface-variant);
+      pointer-events: none;
+      transition: all 0.2s var(--motion-easing-emphasized);
+    }
+
+    /* Flotación del Label */
+    .m3-input:focus ~ .m3-label,
+    .m3-input:not(:placeholder-shown) ~ .m3-label {
+      top: 8px;
+      font-size: 12px;
+      color: var(--md-sys-color-primary);
+      font-weight: 500;
+    }
+
+    /* Área de Texto */
+    textarea.m3-input {
+      min-height: 120px;
+      resize: none;
+      border-radius: 20px;
+    }
+
+    /* Contenedor del Botón (Scaffolding) */
+    .fab-container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      /* Degradado para que el contenido pase por debajo con estilo */
+      background: linear-gradient(to top, var(--md-sys-color-surface) 60%, transparent);
+      pointer-events: none;
+      z-index: 10;
+    }
+    
+    /* El Botón (Extended FAB) */
+    .btn-primary {
+      pointer-events: auto;
+      background-color: var(--md-sys-color-primary);
+      color: var(--md-sys-color-on-primary);
+      height: 56px;
+      padding: 0 24px;
+      border-radius: 16px; /* M3 usa radios de 16px para FABs, no siempre círculos */
+      border: none;
+      font-family: 'Roboto', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: 0.1px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      /* Sombra con tinte azulado */
+      box-shadow: 0 4px 8px 3px rgba(0, 100, 149, 0.15), 0 1px 3px rgba(0, 100, 149, 0.3);
+      cursor: pointer;
+      transition: transform 0.1s var(--motion-easing-emphasized), 
+                  box-shadow 0.2s, 
+                  background-color 0.2s;
+    }
+    
+    /* Efecto al presionar (Feedback táctil Android) */
+    .btn-primary:active {
+      transform: scale(0.94);
+      background-color: #004d74; /* Un azul más oscuro */
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Estado Deshabilitado (Cargando) */
+    .btn-primary:disabled {
+      background-color: #bdc1c6;
+      opacity: 0.12;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    /* ===== BOTTOM SHEET (Menú Deslizante) ===== */
+    .scrim {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 50;
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.3s;
+      backdrop-filter: blur(2px);
+    }
     .scrim.open { opacity: 1; visibility: visible; }
-    .bottom-sheet { position: fixed; bottom: 0; left: 0; right: 0; background-color: var(--md-sys-color-surface-container); border-radius: 28px 28px 0 0; padding: 24px; transform: translateY(100%); transition: 0.3s var(--motion-easing-emphasized); max-height: 85vh; display: flex; flex-direction: column; }
-    .scrim.open .bottom-sheet { transform: translateY(0); }
-    .sheet-handle { width: 32px; height: 4px; background-color: var(--md-sys-color-outline-variant); border-radius: 2px; margin: 0 auto 24px auto; }
-    .sheet-title { font-size: 22px; margin-bottom: 16px; }
-    .sheet-search { margin-bottom: 16px; padding-left: 52px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' viewBox='0 -960 960 960' width='24' fill='%2344474E'%3E%3Cpath d='M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: 16px center; }
-    .sheet-list { overflow-y: auto; flex-grow: 1; margin: 0 -24px; padding: 0 24px; }
-    .sheet-item { padding: 16px; border-bottom: 1px solid var(--md-sys-color-outline-variant); cursor: pointer; }
-    .sheet-item-code { font-weight: 700; color: var(--md-sys-color-primary); margin-right: 8px; }
-    /* ADICIÓN: Estilo teclado activo */
-    .sheet-item.teclado-activo { background-color: #E2E7F0; border-left: 4px solid var(--md-sys-color-primary); }
 
+    .bottom-sheet {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background-color: var(--md-sys-color-surface-container);
+      border-radius: 28px 28px 0 0; /* Esquinas superiores redondeadas */
+      padding: 24px 24px 40px 24px;
+      transform: translateY(100%);
+      transition: transform 0.3s var(--motion-easing-emphasized);
+      display: flex;
+      flex-direction: column;
+      max-height: 85vh; /* Máxima altura */
+    }
+    .scrim.open .bottom-sheet { transform: translateY(0); }
+
+    .sheet-handle {
+      width: 32px; height: 4px;
+      background-color: var(--md-sys-color-outline-variant);
+      border-radius: 2px;
+      margin: 0 auto 24px auto;
+      opacity: 0.8;
+    }
+    
+    .sheet-title {
+      font-size: 22px; margin: 0 0 16px 0;
+      color: var(--md-sys-color-on-surface);
+      font-weight: 400;
+    }
+
+    .sheet-search {
+      margin-bottom: 16px;
+      padding: 0 16px; /* Ajuste para el icono del buscador */
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' viewBox='0 -960 960 960' width='24' fill='%2344474E'%3E%3Cpath d='M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: 16px center;
+      padding-left: 52px; /* Espacio para que no pise el icono */
+    }
+
+    .sheet-list {
+      overflow-y: auto;
+      flex-grow: 1;
+      margin: 0 -24px;
+      padding: 0 24px;
+    }
+
+    .sheet-item {
+      padding: 16px;
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
+      cursor: pointer;
+      font-size: 16px;
+      color: var(--md-sys-color-on-surface);
+      transition: background 0.2s;
+    }
+    .sheet-item:last-child { border-bottom: none; }
+    .sheet-item:hover { background-color: var(--md-sys-color-surface-container-high); }
+
+    .sheet-item-code {
+      font-weight: 700; color: var(--md-sys-color-primary);
+      margin-right: 8px;
+    }
+
+    /* CAMBIO SOLICITADO: Estilo teclado activo */
+    .sheet-item.teclado-activo {
+      background-color: #E2E7F0;
+      border-left: 4px solid var(--md-sys-color-primary);
+    }
+
+    /* UTILS */
     .hidden { display: none !important; }
-    #toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 50px; padding: 16px; position: fixed; z-index: 100; left: 50%; bottom: 100px; transform: translateX(-50%); opacity: 0; transition: 0.3s; }
+    
+    /* TOAST (Notificaciones) */
+    #toast {
+      visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center;
+      border-radius: 50px; padding: 16px; position: fixed; z-index: 100; left: 50%; bottom: 100px;
+      transform: translateX(-50%); font-size: 14px; opacity: 0; transition: opacity 0.3s, bottom 0.3s;
+    }
     #toast.show { visibility: visible; opacity: 1; bottom: 110px; }
-    #toast.success { background-color: #0F5223; }
-    #toast.error { background-color: #8C1D18; }
+    #toast.success { background-color: #0F5223; color: #C4EED0; }
+    #toast.error { background-color: #8C1D18; color: #F9DEDC; }
+
   </style>
 </head>
 <body>
+
   <div id="skeleton" class="app-frame" style="text-align:center; padding-top:100px;">
     <div style="width:48px; height:48px; border:4px solid #E0E0E0; border-top-color: var(--md-sys-color-primary); border-radius:50%; animation:spin 1s linear infinite; margin:0 auto;"></div>
     <p style="color:#888; margin-top:16px;">Cargando app...</p>
@@ -91,12 +362,17 @@
 
   <div id="app" class="app-frame hidden">
     <header>
-      <h1>Distribución</h1>
-      <button class="icon-btn" onclick="forzarRefresco()"><span class="material-symbols-rounded">sync</span></button>
+      <div>
+        <h1>Distribución</h1>
+        <div class="subtitle">Unidad de Negocio – Jonathan Coral</div>
+      </div>
+      <button class="icon-btn" onclick="forzarRefresco()" title="Sincronizar">
+        <span class="material-symbols-rounded" id="iconSync">sync</span>
+      </button>
     </header>
 
     <div class="card-switch" onclick="document.getElementById('sinDistribucion').click()">
-      <span>No prorratear</span>
+      <span class="switch-text">No prorratear</span>
       <div class="m3-switch">
         <input type="checkbox" id="sinDistribucion" onchange="toggleManual()">
         <div class="track"><div class="thumb"></div></div>
@@ -117,6 +393,7 @@
         <label class="m3-label">Centro de operación</label>
         <input type="hidden" id="co">
       </div>
+      
       <div class="input-wrapper">
         <input type="text" id="unTexto" class="m3-input selectable" placeholder=" " readonly onclick="abrirBottomSheet('un')">
         <label class="m3-label">Unidad de negocio</label>
@@ -129,24 +406,41 @@
       <label class="m3-label">Servicio</label>
       <input type="hidden" id="servicio">
     </div>
+
     <div class="input-wrapper">
       <input type="text" id="ccostoTexto" class="m3-input selectable" placeholder=" " readonly onclick="abrirBottomSheet('ccosto')">
       <label class="m3-label">Centro de costo</label>
       <input type="hidden" id="ccosto">
     </div>
+
     <div class="input-wrapper">
       <input type="text" id="motivoTexto" class="m3-input selectable" placeholder=" " readonly onclick="abrirBottomSheet('motivo')">
       <label class="m3-label">Motivo</label>
       <input type="hidden" id="motivo">
     </div>
-    <div class="input-wrapper"><input type="text" id="tercero" class="m3-input" placeholder=" "><label class="m3-label">Tercero (NIT/CC)</label></div>
-    <div class="input-wrapper"><input type="number" id="valor" class="m3-input" placeholder=" "><label class="m3-label">Valor total</label></div>
-    <div class="input-wrapper"><textarea id="nota" class="m3-input" placeholder=" "></textarea><label class="m3-label">Nota / Detalle</label></div>
+
+    <div class="input-wrapper">
+      <input type="text" id="tercero" class="m3-input" placeholder=" ">
+      <label class="m3-label">Tercero</label>
+    </div>
+
+    <div class="input-wrapper">
+      <input type="number" id="valor" class="m3-input" placeholder=" ">
+      <label class="m3-label">Valor total</label>
+    </div>
+
+    <div class="input-wrapper">
+      <textarea id="nota" class="m3-input" placeholder=" "></textarea>
+      <label class="m3-label">Nota / Detalle</label>
+    </div>
+
+    <div style="height: 60px;"></div>
   </div>
 
   <div id="fabContainer" class="fab-container hidden">
     <button class="btn-primary" id="btnGenerar" onclick="generar()">
-      <span class="material-symbols-rounded">description</span> Generar
+      <span class="material-symbols-rounded">description</span>
+      <span id="btnText">Generar</span>
     </button>
   </div>
 
@@ -158,23 +452,27 @@
       <div id="sheetList" class="sheet-list"></div>
     </div>
   </div>
-  <div id="toast"></div>
+
+  <div id="toast">Mensaje</div>
 
   <script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbyI8BNbtgbuJBWF8qiFEQEhIYsqauPjlCGBripklzklUhvg_7LHK8Hn5YOLxQVZoDf_iw/exec';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbyI8BNbtgbuJBWF8qiFEQEhIYsqauPjlCGBripklzklUhvg_7LHK8Hn5YOLxQVZoDf_iw/exec'; 
     let datosGlobales = {};
     let seleccionActual = '';
-    // ADICIÓN: Variable navegación
+    // CAMBIO SOLICITADO: Variable navegación teclado
     let indiceNavegacion = -1;
 
     window.onload = function() {
       cargarDatos();
-      document.getElementById('sheetSearchInput').addEventListener('input', (e) => filtrarListaSheet(e.target.value));
-      
-      // ADICIÓN: Listener Teclado
+      document.getElementById('sheetSearchInput').addEventListener('input', (e) => {
+        filtrarListaSheet(e.target.value);
+      });
+
+      // CAMBIO SOLICITADO: Listener de teclado para navegación
       document.getElementById('sheetSearchInput').addEventListener('keydown', function(e) {
         const items = document.getElementsByClassName('sheet-item');
         if (items.length === 0) return;
+
         if (e.key === 'ArrowDown') {
           e.preventDefault();
           indiceNavegacion = (indiceNavegacion + 1) % items.length;
@@ -183,9 +481,11 @@
           e.preventDefault();
           indiceNavegacion = (indiceNavegacion - 1 + items.length) % items.length;
           actualizarSeleccionTeclado(items);
-        } else if (e.key === 'Enter' && indiceNavegacion >= 0) {
+        } else if (e.key === 'Enter') {
           e.preventDefault();
-          items[indiceNavegacion].click();
+          if (indiceNavegacion >= 0 && items[indiceNavegacion]) {
+            items[indiceNavegacion].click();
+          }
         }
       });
     };
@@ -193,25 +493,30 @@
     function actualizarSeleccionTeclado(items) {
       Array.from(items).forEach(it => it.classList.remove('teclado-activo'));
       if (items[indiceNavegacion]) {
-        items[indiceNavegacion].classList.add('teclado-activo');
-        items[indiceNavegacion].scrollIntoView({ block: 'nearest' });
+        const itemActivo = items[indiceNavegacion];
+        itemActivo.classList.add('teclado-activo');
+        itemActivo.scrollIntoView({ block: 'nearest' });
       }
     }
 
     function cargarDatos() {
-      callGoogleScript('cargarDatosIniciales').then(datos => {
-        datosGlobales = datos;
-        document.getElementById('skeleton').classList.add('hidden');
-        document.getElementById('app').classList.remove('hidden');
-        document.getElementById('fabContainer').classList.remove('hidden');
-      }).catch(() => showToast('Error de conexión', 'error'));
+      callGoogleScript('cargarDatosIniciales')
+        .then(datos => {
+          datosGlobales = datos;
+          document.getElementById('skeleton').classList.add('hidden');
+          document.getElementById('app').classList.remove('hidden');
+          document.getElementById('fabContainer').classList.remove('hidden');
+        })
+        .catch(err => showToast('Error de conexión', 'error'));
     }
 
     function abrirBottomSheet(tipo) {
       seleccionActual = tipo;
-      indiceNavegacion = -1;
+      indiceNavegacion = -1; // Reset teclado
       const sheetTitle = document.getElementById('sheetTitle');
       const searchInput = document.getElementById('sheetSearchInput');
+      
+      document.getElementById('sheetList').innerHTML = '';
       searchInput.value = '';
       
       let datos = [];
@@ -220,10 +525,11 @@
       else if (tipo === 'ccosto') { sheetTitle.innerText = 'Centros de Costo'; datos = datosGlobales.ccostos; }
       else if (tipo === 'un') { sheetTitle.innerText = 'Unidades de Negocio'; datos = datosGlobales.unidades; }
       else if (tipo === 'co') { sheetTitle.innerText = 'Centros de Operación'; datos = datosGlobales.centros; }
-      // ADICIÓN: Lógica filtrado motivos por grupo CC
+      
+      // CAMBIO SOLICITADO: Filtrado dinámico de motivos por grupo de Centro de Costo
       else if (tipo === 'motivo') {
         sheetTitle.innerText = 'Motivos';
-        const ccCode = document.getElementById('ccosto').value;
+        const ccCode = document.getElementById('ccosto').value; 
         const ccObj = datosGlobales.ccostos.find(c => c.codigo == ccCode);
         const grupo = ccObj ? ccObj.grupo : "";
         datos = grupo ? datosGlobales.motivos.filter(m => m.grupo == grupo) : datosGlobales.motivos;
@@ -234,7 +540,9 @@
       setTimeout(() => searchInput.focus(), 100);
     }
 
-    function cerrarBottomSheet() { document.getElementById('scrim').classList.remove('open'); }
+    function cerrarBottomSheet() {
+      document.getElementById('scrim').classList.remove('open');
+    }
 
     function renderizarItems(lista) {
       const sheetList = document.getElementById('sheetList');
@@ -262,9 +570,10 @@
         const grupo = ccObj ? ccObj.grupo : "";
         datos = grupo ? datosGlobales.motivos.filter(m => m.grupo == grupo) : datosGlobales.motivos;
       }
+
       const filtrados = datos.filter(it => (it.codigo + ' ' + it.nombre).toLowerCase().includes(texto.toLowerCase()));
       renderizarItems(filtrados);
-      indiceNavegacion = -1;
+      indiceNavegacion = -1; // Reset al filtrar
     }
 
     function seleccionarItem(item) {
@@ -283,30 +592,51 @@
       const btn = document.getElementById('btnGenerar');
       const originalText = btn.innerHTML;
       btn.disabled = true; btn.innerHTML = 'Procesando...';
+      
       const sinDistribucion = document.getElementById('sinDistribucion').checked;
       const payload = {
-        sinDistribucion,
-        opcion: document.getElementById('opcion').value,
-        co: sinDistribucion ? document.getElementById('co').value : null,
-        un: sinDistribucion ? document.getElementById('un').value : null,
-        servicio: document.getElementById('servicio').value,
-        motivo: document.getElementById('motivo').value,
-        ccosto: document.getElementById('ccosto').value,
-        tercero: document.getElementById('tercero').value,
-        valor: document.getElementById('valor').value,
-        nota: document.getElementById('nota').value
+          sinDistribucion,
+          opcion: document.getElementById('opcion').value,
+          co: sinDistribucion ? document.getElementById('co').value : null,
+          un: sinDistribucion ? document.getElementById('un').value : null,
+          servicio: document.getElementById('servicio').value,
+          motivo: document.getElementById('motivo').value,
+          ccosto: document.getElementById('ccosto').value,
+          tercero: document.getElementById('tercero').value,
+          valor: document.getElementById('valor').value,
+          nota: document.getElementById('nota').value
       };
-      if (!payload.valor || !payload.nota) { showToast('Faltan datos', 'error'); resetBtn(btn, originalText); return; }
-      callGoogleScript('generarTexto', payload).then(texto => {
-        navigator.clipboard.writeText(texto);
-        showToast('¡Listo!', 'success');
-        resetBtn(btn, originalText);
-      }).catch(err => { showToast('Error: ' + err.message, 'error'); resetBtn(btn, originalText); });
+  
+      if (!payload.valor || !payload.nota) { showToast('Falta valor o nota', 'error'); resetBtn(btn, originalText); return; }
+  
+      callGoogleScript('generarTexto', payload)
+        .then(texto => {
+            navigator.clipboard.writeText(texto);
+            showToast('¡Listo!', 'success');
+            resetBtn(btn, originalText);
+        })
+        .catch(err => {
+            showToast('Error: ' + err.message, 'error');
+            resetBtn(btn, originalText);
+        });
+    }
+  
+    function resetBtn(btn, content) {
+        btn.disabled = false;
+        btn.innerHTML = content;
     }
 
-    function resetBtn(btn, content) { btn.disabled = false; btn.innerHTML = content; }
-    function forzarRefresco() { showToast('Sincronizando...', 'success'); callGoogleScript('limpiarCache').then(d => { datosGlobales = d; showToast('Actualizado', 'success'); }); }
-    function showToast(m, t) { const s = document.getElementById('toast'); s.innerText = m; s.className = t + ' show'; setTimeout(() => s.className = '', 3000); }
+    function forzarRefresco() {
+      showToast('Actualizando datos...', 'success');
+      callGoogleScript('limpiarCache').then(d => { datosGlobales = d; showToast('Actualizado', 'success'); });
+    }
+
+    function showToast(msg, type) {
+      const t = document.getElementById('toast');
+      t.innerText = msg; t.className = type + ' show';
+      setTimeout(() => { t.className = ''; }, 3000);
+    }
+
     function callGoogleScript(action, datos = null) {
       return fetch(API_URL, { method: 'POST', body: JSON.stringify({ action, datos }) })
       .then(res => res.json()).then(r => { if (r.status === 'success') return r.data; throw new Error(r.message); });
