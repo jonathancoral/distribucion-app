@@ -374,6 +374,17 @@
       display: flex; align-items: center; gap: 12px;
     }
     #toast.show { opacity: 1; transform: translateX(-50%) scale(1); }
+
+    /* Ocultar barra de desplazamiento para Chrome, Safari, Edge y Opera */
+body::-webkit-scrollbar {
+  display: none;
+}
+
+/* Ocultar barra de desplazamiento para IE, Edge (versiones antiguas) y Firefox */
+body {
+  -ms-overflow-style: none;  /* IE y Edge */
+  scrollbar-width: none;  /* Firefox */
+}
     
   </style>
 </head>
