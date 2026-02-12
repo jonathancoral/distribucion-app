@@ -260,18 +260,17 @@
       opacity: 1;                /* IMPORTANTE: Opacidad al 100% para leer el texto */
       pointer-events: none;
     }
+
     /* ===== BOTTOM SHEET (Menú Deslizante) ===== */
     .scrim {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(0,0,0,0.4);
       z-index: 50;
-      opacity: 0;
-      visibility: hidden;
+      opacity: 0; visibility: hidden;
       transition: opacity 0.3s;
       backdrop-filter: blur(2px);
     }
-    
     .scrim.open { opacity: 1; visibility: visible; }
 
     .bottom-sheet {
@@ -279,100 +278,82 @@
       bottom: 0; left: 0; right: 0;
       background-color: var(--md-sys-color-surface-container);
       border-radius: 28px 28px 0 0; /* Esquinas superiores redondeadas */
-      z-index: 60;
+      padding: 24px 24px 40px 24px;
       transform: translateY(100%);
-      transition: transform 0.4s var(--motion-easing-emphasized);
-      max-height: 85vh; /* Casi toda la pantalla */
+      transition: transform 0.3s var(--motion-easing-emphasized);
       display: flex;
       flex-direction: column;
+      max-height: 85vh; /* Máxima altura */
     }
-
     .scrim.open .bottom-sheet { transform: translateY(0); }
 
     .sheet-handle {
       width: 32px; height: 4px;
       background-color: var(--md-sys-color-outline-variant);
       border-radius: 2px;
-      align-self: center;
-      margin-top: 16px;
-      margin-bottom: 8px;
-    }
-
-    .sheet-header {
-      padding: 0 24px 16px 24px;
+      margin: 0 auto 24px auto;
+      opacity: 0.8;
     }
     
     .sheet-title {
-      font-size: 22px;
-      margin: 0 0 16px 0;
+      font-size: 22px; margin: 0 0 16px 0;
       color: var(--md-sys-color-on-surface);
+      font-weight: 400;
     }
 
-    /* Buscador dentro del Sheet */
     .sheet-search {
-      background-color: var(--md-sys-color-surface-container-high);
-      border-radius: var(--shape-full);
-      height: 48px;
-      display: flex;
-      align-items: center;
-      padding: 0 16px;
-      color: var(--md-sys-color-on-surface);
-    }
-    .sheet-search input {
-      border: none; background: transparent;
-      margin-left: 8px; flex: 1;
-      font-size: 16px; outline: none;
-      color: var(--md-sys-color-on-surface);
+      margin-bottom: 16px;
+      padding: 0 16px; /* Ajuste para el icono del buscador */
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' viewBox='0 -960 960 960' width='24' fill='%2344474E'%3E%3Cpath d='M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: 16px center;
+      padding-left: 52px; /* Espacio para que no pise el icono */
     }
 
-    .sheet-content {
+    .sheet-list {
       overflow-y: auto;
-      padding-bottom: 32px;
-      flex: 1; /* Ocupa el resto */
+      flex-grow: 1;
+      margin: 0 -24px;
+      padding: 0 24px;
     }
 
     .sheet-item {
-      padding: 16px 24px;
-      border-bottom: 1px solid #F0F0F0;
+      padding: 16px;
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
       cursor: pointer;
-      transition: background 0.1s;
-    }
-    .sheet-item:active { background-color: var(--md-sys-color-surface-container-high); }
-    
-    .item-code {
-      display: block;
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--md-sys-color-primary);
-      margin-bottom: 2px;
-    }
-    .item-name {
       font-size: 16px;
       color: var(--md-sys-color-on-surface);
+      transition: background 0.2s;
+    }
+    .sheet-item:last-child { border-bottom: none; }
+    .sheet-item:hover { background-color: var(--md-sys-color-surface-container-high); }
+
+    .sheet-item-code {
+      font-weight: 700; color: var(--md-sys-color-primary);
+      margin-right: 8px;
     }
 
-    /* Utilidades */
+    /* Estilo para el ítem seleccionado con teclado */
+    .sheet-item.teclado-activo {
+      background-color: #E2E7F0; /* Un gris suave similar al hover */
+      border-left: 4px solid var(--md-sys-color-primary);
+    }
+
+    /* UTILS */
     .hidden { display: none !important; }
     
-    /* Toast */
+    /* TOAST (Notificaciones) */
     #toast {
-      position: fixed; bottom: 100px; left: 50%;
-      transform: translateX(-50%) scale(0.9);
-      background-color: #313033;
-      color: #F4EFF4;
-      padding: 14px 24px;
-      border-radius: 4px; /* Pequeño radio Toast clásico Android o full rounded */
-      border-radius: 99px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      opacity: 0; pointer-events: none;
-      transition: all 0.3s; z-index: 100;
-      display: flex; align-items: center; gap: 12px;
+      visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center;
+      border-radius: 50px; padding: 16px; position: fixed; z-index: 100; left: 50%; bottom: 100px;
+      transform: translateX(-50%); font-size: 14px; opacity: 0; transition: opacity 0.3s, bottom 0.3s;
     }
-    #toast.show { opacity: 1; transform: translateX(-50%) scale(1); }
-    
+    #toast.show { visibility: visible; opacity: 1; bottom: 110px; }
+    #toast.success { background-color: #0F5223; color: #C4EED0; }
+    #toast.error { background-color: #8C1D18; color: #F9DEDC; }
+
   </style>
 </head>
-
 <body>
 
   <div id="skeleton" class="app-frame" style="text-align:center; padding-top:100px;">
@@ -382,11 +363,10 @@
   </div>
 
   <div id="app" class="app-frame hidden">
-    
     <header>
       <div>
-        <h1>Documentos Soporte</h1>
-        <div class="subtitle">Prorrateo de Unidades de Negocio – Jonathan Coral</div>
+        <h1>Distribución</h1>
+        <div class="subtitle">Unidad de Negocio – Jonathan Coral</div>
       </div>
       <button class="icon-btn" onclick="forzarRefresco()" title="Sincronizar">
         <span class="material-symbols-rounded" id="iconSync">sync</span>
@@ -410,18 +390,18 @@
     </div>
 
     <div id="bloqueManual" class="hidden">
-          <div class="input-wrapper">
-            <input type="text" id="coTexto" class="m3-input selectable" placeholder=" " readonly onclick="abrirBottomSheet('co')">
-            <label class="m3-label">Centro de operación</label>
-            <input type="hidden" id="co">
-          </div>
-          
-          <div class="input-wrapper">
-            <input type="text" id="unTexto" class="m3-input selectable" placeholder=" " readonly onclick="abrirBottomSheet('un')">
-            <label class="m3-label">Unidad de negocio</label>
-            <input type="hidden" id="un">
-          </div>
-        </div>
+      <div class="input-wrapper">
+        <input type="text" id="coTexto" class="m3-input selectable" placeholder=" " readonly onclick="abrirBottomSheet('co')">
+        <label class="m3-label">Centro de operación</label>
+        <input type="hidden" id="co">
+      </div>
+      
+      <div class="input-wrapper">
+        <input type="text" id="unTexto" class="m3-input selectable" placeholder=" " readonly onclick="abrirBottomSheet('un')">
+        <label class="m3-label">Unidad de negocio</label>
+        <input type="hidden" id="un">
+      </div>
+    </div>
 
     <div class="input-wrapper">
       <input type="text" id="servicioTexto" class="m3-input selectable" placeholder=" " readonly onclick="abrirBottomSheet('servicio')">
@@ -436,112 +416,75 @@
     </div>
 
     <div class="input-wrapper">
-          <input type="text" id="motivoTexto" class="m3-input selectable" placeholder=" " readonly onclick="abrirBottomSheet('motivo')">
-          <label class="m3-label">Motivo</label>
-          <input type="hidden" id="motivo">
-        </div>
-
-    <div class="input-wrapper">
-      <input type="text" id="tercero" class="m3-input" placeholder=" ">
-      <label class="m3-label">Tercero</label>
+      <input type="text" id="motivoTexto" class="m3-input selectable" placeholder=" " readonly onclick="abrirBottomSheet('motivo')">
+      <label class="m3-label">Motivo</label>
+      <input type="hidden" id="motivo">
     </div>
 
     <div class="input-wrapper">
-      <input type="text" id="valor" class="m3-input" placeholder=" " inputmode="numeric">
-      <label class="m3-label">Valor</label>
+      <input type="text" id="tercero" class="m3-input" placeholder=" ">
+      <label class="m3-label">Tercero (NIT/CC)</label>
+    </div>
+
+    <div class="input-wrapper">
+      <input type="number" id="valor" class="m3-input" placeholder=" ">
+      <label class="m3-label">Valor total</label>
     </div>
 
     <div class="input-wrapper">
       <textarea id="nota" class="m3-input" placeholder=" "></textarea>
-      <label class="m3-label">Nota</label>
+      <label class="m3-label">Nota / Detalle</label>
     </div>
 
-  </div> <div class="fab-container hidden" id="fabContainer">
-    <button id="btnGenerar" class="btn-primary" onclick="generar()">
-      <span class="material-symbols-rounded">auto_fix_high</span>
-      Generar
+    <div style="height: 60px;"></div>
+  </div>
+
+  <div id="fabContainer" class="fab-container hidden">
+    <button class="btn-primary" id="btnGenerar" onclick="generar()">
+      <span class="material-symbols-rounded" id="btnIcon">description</span>
+      <span id="btnText">Generar</span>
+      <div id="btnSpinner" style="display:none; width:20px; height:20px; border:2px solid #44474E; border-top-color:transparent; border-radius:50%; animation:spin 1s linear infinite; margin-left:8px;"></div>
     </button>
   </div>
 
-  <div class="scrim" id="scrim" onclick="cerrarBottomSheet()">
-    <div class="bottom-sheet" id="sheet" onclick="event.stopPropagation()">
+  <div id="scrim" class="scrim" onclick="cerrarBottomSheet()">
+    <div class="bottom-sheet" onclick="event.stopPropagation()">
       <div class="sheet-handle"></div>
-      
-      <div class="sheet-header">
-        <h3 class="sheet-title" id="sheetTitle">Seleccionar</h3>
-        <div class="sheet-search">
-          <span class="material-symbols-rounded">search</span>
-          <input type="text" id="sheetSearchInput" placeholder="Buscar...">
-        </div>
-      </div>
-
-      <div class="sheet-content" id="sheetList">
-        </div>
+      <h2 id="sheetTitle" class="sheet-title">Seleccionar</h2>
+      <input type="text" id="sheetSearchInput" class="m3-input sheet-search" placeholder="Buscar...">
+      <div id="sheetList" class="sheet-list"></div>
     </div>
   </div>
 
-  <div id="toast">
-    <span class="material-symbols-rounded" id="toastIcon">info</span>
-    <span id="toastMsg">Mensaje</span>
-  </div>
+  <div id="toast">Mensaje</div>
 
-<script>
-  // URL DEL BACKEND (GOOGLE APPS SCRIPT)
-  const API_URL = "https://script.google.com/macros/s/AKfycbyI8BNbtgbuJBWF8qiFEQEhIYsqauPjlCGBripklzklUhvg_7LHK8Hn5YOLxQVZoDf_iw/exec"; 
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbz_0bH7W.../exec'; // Tu URL aquí
+    let datosGlobales = {};
+    let seleccionActual = '';
 
-  // Memoria local de datos
-  let datosGlobales = {};
-  let seleccionActual = null; // 'servicio', 'ccosto', etc.
-
-  // --- CONEXIÓN ---
-  async function callGoogleScript(action, payload = {}) {
-    try {
-      const response = await fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify({ action, datos: payload })
-      });
-      const json = await response.json();
-      if (json.status === 'error') throw new Error(json.message);
-      return json.data;
-    } catch (e) {
-      throw e;
-    }
-  }
-
-  // --- LÓGICA DE INTERFAZ ---
-  window.onload = function() {
-    // Service Worker
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
-    
-    // Formato moneda
-    const inputValor = document.getElementById('valor');
-    inputValor.addEventListener('input', function(e) {
-      let val = this.value.replace(/\D/g, '');
-      this.value = val ? val.replace(/\B(?=(\d{3})+(?!\d))/g, ".") : '';
-    });
-
-    // Cargar datos
-    cargarDatos();
-    
-    // Configurar buscador del Bottom Sheet
-    document.getElementById('sheetSearchInput').addEventListener('input', (e) => {
+    window.onload = function() {
+      cargarDatos();
+      
+      // Configurar buscador del Bottom Sheet
+      document.getElementById('sheetSearchInput').addEventListener('input', (e) => {
         filtrarListaSheet(e.target.value);
-    });
-  };
+      });
+    };
 
-  function cargarDatos() {
-    callGoogleScript('cargarDatosIniciales')
-      .then(datos => {
-        datosGlobales = datos;
-        document.getElementById('skeleton').classList.add('hidden');
-        document.getElementById('app').classList.remove('hidden');
-        document.getElementById('fabContainer').classList.remove('hidden');
-      })
-      .catch(err => showToast('Error de conexión', 'error'));
-  }
+    function cargarDatos() {
+      callGoogleScript('cargarDatosIniciales')
+        .then(datos => {
+          datosGlobales = datos;
+          document.getElementById('skeleton').classList.add('hidden');
+          document.getElementById('app').classList.remove('hidden');
+          document.getElementById('fabContainer').classList.remove('hidden');
+        })
+        .catch(err => showToast('Error de conexión', 'error'));
+    }
 
-  // --- BOTTOM SHEET LOGIC (EL CORAZÓN DE LA APP) ---
-  function abrirBottomSheet(tipo) {
+    // --- BOTTOM SHEET LOGIC (EL CORAZÓN DE LA APP) ---
+    function abrirBottomSheet(tipo) {
       seleccionActual = tipo;
       const sheetTitle = document.getElementById('sheetTitle');
       const sheetList = document.getElementById('sheetList');
@@ -555,59 +498,84 @@
       let datos = [];
       if (tipo === 'opcion') { sheetTitle.innerText = 'Opciones'; datos = datosGlobales.opciones; }
       else if (tipo === 'servicio') { sheetTitle.innerText = 'Servicios'; datos = datosGlobales.servicios; }
-      else if (tipo === 'ccosto') { sheetTitle.innerText = 'Centros de costo'; datos = datosGlobales.ccostos; }
-      else if (tipo === 'un') { sheetTitle.innerText = 'Unidades de negocio'; datos = datosGlobales.unidades; }
+      else if (tipo === 'ccosto') { sheetTitle.innerText = 'Centros de Costo'; datos = datosGlobales.ccostos; }
+      else if (tipo === 'un') { sheetTitle.innerText = 'Unidades de Negocio'; datos = datosGlobales.unidades; }
+      else if (tipo === 'co') { sheetTitle.innerText = 'Centros de Operación'; datos = datosGlobales.centros; }
       
-      // --- ESTAS SON LAS LÍNEAS QUE FALTABAN ---
-      else if (tipo === 'co') { sheetTitle.innerText = 'Centros de operación'; datos = datosGlobales.centros; }
-      else if (tipo === 'motivo') { sheetTitle.innerText = 'Motivos'; datos = datosGlobales.motivos; }
+      // --- LÓGICA DE FILTRADO PARA MOTIVOS ---
+      else if (tipo === 'motivo') {
+        sheetTitle.innerText = 'Motivos';
+        
+        // 1. Obtenemos qué Centro de Costo está seleccionado actualmente
+        const ccCode = document.getElementById('ccosto').value; 
+        
+        // 2. Buscamos ese CC en los datos globales para saber su grupo
+        const ccObj = datosGlobales.ccostos.find(c => c.codigo == ccCode);
+        const grupoRequerido = ccObj ? ccObj.grupo : "";
+
+        // 3. Filtramos los motivos
+        if (grupoRequerido) {
+          // Solo mostramos motivos que tengan EL MISMO grupo
+          datos = datosGlobales.motivos.filter(m => m.grupo == grupoRequerido);
+        } else {
+          // Si el CC no tiene grupo (o no se seleccionó CC), mostramos todos
+          datos = datosGlobales.motivos;
+        }
+      }
       // ----------------------------------------
-  
+
       renderizarItems(datos);
-  
+
       // Abrir animación
       const scrim = document.getElementById('scrim');
       scrim.classList.add('open');
-      // Pequeño delay para asegurar foco en móviles
+      
+      // Reseteamos el índice del teclado
+      indiceNavegacion = -1; 
       setTimeout(() => searchInput.focus(), 100);
     }
 
-  function renderizarItems(lista) {
-    const container = document.getElementById('sheetList');
-    container.innerHTML = '';
-    
-    if (lista.length === 0) {
-        container.innerHTML = '<div style="padding:20px; text-align:center; color:#888">No se encontraron resultados</div>';
-        return;
+    function cerrarBottomSheet() {
+      document.getElementById('scrim').classList.remove('open');
     }
 
-    lista.forEach(item => {
-      const div = document.createElement('div');
-      div.className = 'sheet-item';
-      div.onclick = () => seleccionarItem(item);
+    function renderizarItems(lista) {
+      const sheetList = document.getElementById('sheetList');
+      sheetList.innerHTML = '';
       
-      div.innerHTML = `
-        <span class="item-code">${item.codigo}</span>
-        <span class="item-name">${item.nombre}</span>
-      `;
-      container.appendChild(div);
-    });
-  }
+      lista.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'sheet-item';
+        // HTML seguro
+        div.innerHTML = `<span class="sheet-item-code">${item.codigo}</span> ${item.nombre}`;
+        div.onclick = () => seleccionarItem(item);
+        sheetList.appendChild(div);
+      });
+    }
 
-  function filtrarListaSheet(texto) {
-      const tipo = seleccionActual; // Usamos la variable global
+    function filtrarListaSheet(texto) {
+      const tipo = seleccionActual;
       let datos = [];
       
       if (tipo === 'opcion') datos = datosGlobales.opciones;
       else if (tipo === 'servicio') datos = datosGlobales.servicios;
       else if (tipo === 'ccosto') datos = datosGlobales.ccostos;
       else if (tipo === 'un') datos = datosGlobales.unidades;
-      
-      // --- ESTAS SON LAS LÍNEAS QUE FALTABAN ---
       else if (tipo === 'co') datos = datosGlobales.centros;
-      else if (tipo === 'motivo') datos = datosGlobales.motivos;
-      // ----------------------------------------
-  
+      
+      // --- FILTRADO ESPECIAL PARA MOTIVOS ---
+      else if (tipo === 'motivo') {
+         const ccCode = document.getElementById('ccosto').value; 
+         const ccObj = datosGlobales.ccostos.find(c => c.codigo == ccCode);
+         const grupoRequerido = ccObj ? ccObj.grupo : "";
+         
+         if (grupoRequerido) {
+           datos = datosGlobales.motivos.filter(m => m.grupo == grupoRequerido);
+         } else {
+           datos = datosGlobales.motivos;
+         }
+      }
+
       const filtrados = datos.filter(item => {
           const busqueda = (item.codigo + ' ' + item.nombre).toLowerCase();
           return busqueda.includes(texto.toLowerCase());
@@ -615,88 +583,58 @@
       renderizarItems(filtrados);
     }
 
-  function seleccionarItem(item) {
-    // 1. Llenar el input VISIBLE con "CÓDIGO - NOMBRE"
-    const inputVisual = document.getElementById(seleccionActual + 'Texto');
-    inputVisual.value = `${item.codigo} — ${item.nombre}`;
-    
-    // 2. Llenar el input OCULTO solo con "CÓDIGO"
-    const inputHidden = document.getElementById(seleccionActual);
-    if (inputHidden) inputHidden.value = item.codigo;
-    else if (seleccionActual === 'opcion') document.getElementById('opcion').value = item.codigo; // Caso especial opción
-
-    cerrarBottomSheet();
-  }
-
-  function cerrarBottomSheet() {
-    document.getElementById('scrim').classList.remove('open');
-  }
-
-  function toggleManual() {
-    const check = document.getElementById('sinDistribucion');
-    const bDist = document.getElementById('bloqueDistribucion');
-    const bMan = document.getElementById('bloqueManual');
-    
-    if (check.checked) {
-        bDist.classList.add('hidden');
-        bMan.classList.remove('hidden');
-    } else {
-        bDist.classList.remove('hidden');
-        bMan.classList.add('hidden');
+    function seleccionarItem(item) {
+      // 1. Llenar el input VISIBLE con "CÓDIGO - NOMBRE"
+      const inputVisual = document.getElementById(seleccionActual + 'Texto');
+      if (inputVisual) inputVisual.value = `${item.codigo} — ${item.nombre}`;
+      
+      // 2. Llenar el input OCULTO solo con "CÓDIGO"
+      const inputHidden = document.getElementById(seleccionActual);
+      if (inputHidden) inputHidden.value = item.codigo;
+      else if (seleccionActual === 'opcion') document.getElementById('opcion').value = item.codigo; // Caso especial opción
+      
+      cerrarBottomSheet();
     }
-  }
 
-  function forzarRefresco() {
-    const icon = document.getElementById('iconSync');
-    icon.style.transition = 'transform 1s';
-    icon.style.transform = 'rotate(360deg)';
-    showToast('Sincronizando...');
-    
-    callGoogleScript('limpiarCache').then(datos => {
-        datosGlobales = datos;
-        icon.style.transform = 'rotate(0deg)';
-        showToast('Datos actualizados', 'success');
-    });
-  }
+    function toggleManual() {
+      const manual = document.getElementById('sinDistribucion').checked;
+      const bloqueDist = document.getElementById('bloqueDistribucion');
+      const bloqueMan = document.getElementById('bloqueManual');
+      
+      if (manual) {
+        bloqueDist.classList.add('hidden');
+        bloqueMan.classList.remove('hidden');
+      } else {
+        bloqueDist.classList.remove('hidden');
+        bloqueMan.classList.add('hidden');
+      }
+    }
 
-  function showToast(msg, type='info') {
-    const t = document.getElementById('toast');
-    const icon = document.getElementById('toastIcon');
-    document.getElementById('toastMsg').innerText = msg;
-    
-    icon.innerText = type === 'success' ? 'check_circle' : (type === 'error' ? 'error' : 'info');
-    t.style.backgroundColor = type === 'error' ? '#BA1A1A' : (type==='success' ? '#006D3B' : '#313033');
-    
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
-  }
-
-  function generar() {
+    function generar() {
       const btn = document.getElementById('btnGenerar');
-      const originalText = btn.innerHTML; // Guarda el estado original (icono + texto)
+      const btnText = document.getElementById('btnText');
+      const btnIcon = document.getElementById('btnIcon');
+      const btnSpinner = document.getElementById('btnSpinner');
       
-      // CAMBIO: Icono de carga giratorio M3 + Texto
+      // 1. Estado Loading (Expressive)
       btn.disabled = true;
-      btn.innerHTML = '<span class="material-symbols-rounded" style="animation: spin 1s linear infinite; margin-right: 8px;">progress_activity</span> Procesando...';
-  
-      const nota = document.getElementById('nota').value.trim();
-      const valor = Number(document.getElementById('valor').value.replace(/\D/g, ''));
-  
-      // Validaciones (Tus mensajes exactos)
-      if (!/^\d{4}/.test(nota)) {
-          showToast('La nota debe iniciar con el consecutivo del Documento Soporte', 'error');
-          resetBtn(btn, originalText); return;
-      }
-      if (valor <= 0) {
-          showToast('Ingrese un valor válido', 'error');
-          resetBtn(btn, originalText); return;
-      }
-  
-      const sinDistribucion = document.getElementById('sinDistribucion').checked;
+      btnText.innerText = "Procesando...";
+      btnIcon.style.display = 'none'; // Ocultar icono estático
+      btnSpinner.style.display = 'block'; // Mostrar spinner girando
       
+      const sinDistribucion = document.getElementById('sinDistribucion').checked;
+      const valor = document.getElementById('valor').value;
+      const nota = document.getElementById('nota').value;
+      
+      if (!valor || !nota) { 
+          showToast('Falta valor o nota', 'error'); 
+          resetBtn(btn, btnText, btnIcon, btnSpinner);
+          return; 
+      }
+
       const payload = {
-          sinDistribucion,
-          opcion: sinDistribucion ? null : document.getElementById('opcion').value,
+          sinDistribucion: sinDistribucion,
+          opcion: document.getElementById('opcion').value,
           co: sinDistribucion ? document.getElementById('co').value : null,
           un: sinDistribucion ? document.getElementById('un').value : null,
           servicio: document.getElementById('servicio').value,
@@ -708,32 +646,99 @@
       };
   
       // Validar campos requeridos según modo
-      if (!sinDistribucion && !payload.opcion) { showToast('Seleccione una opción', 'error'); resetBtn(btn, originalText); return; }
-      if (!payload.servicio || !payload.ccosto) { showToast('Faltan campos obligatorios', 'error'); resetBtn(btn, originalText); return; }
+      if (!sinDistribucion && !payload.opcion) { showToast('Seleccione una opción', 'error'); resetBtn(btn, btnText, btnIcon, btnSpinner); return; }
+      if (!payload.servicio || !payload.ccosto) { showToast('Faltan campos obligatorios', 'error'); resetBtn(btn, btnText, btnIcon, btnSpinner); return; }
   
       callGoogleScript('generarTexto', payload)
         .then(texto => {
             navigator.clipboard.writeText(texto);
             showToast('¡Listo!', 'success');
-            resetBtn(btn, originalText);
+            resetBtn(btn, btnText, btnIcon, btnSpinner);
         })
         .catch(err => {
             showToast('Error: ' + err.message, 'error');
-            resetBtn(btn, originalText);
+            resetBtn(btn, btnText, btnIcon, btnSpinner);
         });
     }
   
-    // Asegúrate de que esta función auxiliar reciba los 2 parámetros
-    function resetBtn(btn, content) {
+    function resetBtn(btn, btnText, btnIcon, btnSpinner) {
         btn.disabled = false;
-        btn.innerHTML = content;
+        btnText.innerText = "Generar";
+        btnIcon.style.display = 'block';
+        btnSpinner.style.display = 'none';
     }
 
-  function resetBtn(btn, html) {
-      btn.disabled = false;
-      btn.innerHTML = html;
-  }
-</script>
+    function forzarRefresco() {
+      showToast('Actualizando datos...', 'success');
+      callGoogleScript('limpiarCache').then(nuevosDatos => {
+        datosGlobales = nuevosDatos;
+        showToast('Datos actualizados', 'success');
+      });
+    }
 
+    function showToast(msg, type) {
+      const toast = document.getElementById('toast');
+      toast.innerText = msg;
+      toast.className = type + ' show';
+      setTimeout(() => { toast.className = ''; }, 3000);
+    }
+
+    // CLIENTE API GENÉRICO
+    function callGoogleScript(action, data = null) {
+      return fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action, datos: data })
+      })
+      .then(res => res.json())
+      .then(response => {
+        if (response.status === 'success') return response.data;
+        throw new Error(response.message || 'Error desconocido');
+      });
+    }
+
+    // Variable global para rastrear la posición
+    let indiceNavegacion = -1;
+
+    // Escuchar teclas en el input de búsqueda (NAVEGACIÓN CON TECLADO)
+    document.getElementById('sheetSearchInput').addEventListener('keydown', function(e) {
+      const lista = document.getElementById('sheetList');
+      const items = lista.getElementsByClassName('sheet-item');
+      
+      if (items.length === 0) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault(); // Evitar que el cursor se mueva en el input
+        indiceNavegacion++;
+        if (indiceNavegacion >= items.length) indiceNavegacion = 0; // Vuelta al inicio
+        actualizarSeleccionTeclado(items);
+      } 
+      else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        indiceNavegacion--;
+        if (indiceNavegacion < 0) indiceNavegacion = items.length - 1; // Vuelta al final
+        actualizarSeleccionTeclado(items);
+      } 
+      else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (indiceNavegacion >= 0 && indiceNavegacion < items.length) {
+          items[indiceNavegacion].click(); // Simular clic
+        }
+      }
+    });
+
+    function actualizarSeleccionTeclado(items) {
+      // Quitar clase a todos
+      Array.from(items).forEach(item => item.classList.remove('teclado-activo'));
+      
+      // Poner clase al actual
+      if (indiceNavegacion >= 0 && items[indiceNavegacion]) {
+        const itemActivo = items[indiceNavegacion];
+        itemActivo.classList.add('teclado-activo');
+        
+        // Auto-scroll para que siempre sea visible
+        itemActivo.scrollIntoView({ block: 'nearest' });
+      }
+    }
+  </script>
 </body>
 </html>
